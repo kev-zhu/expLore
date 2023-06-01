@@ -6,6 +6,9 @@ name = "pypi"
 [packages]
 django = "*"
 psycopg2-binary = "*"
+validate-email = "*"
+six = "*"
+certifi = "*"
 
 [dev-packages]
 
