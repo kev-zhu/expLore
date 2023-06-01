@@ -1,0 +1,61 @@
+{% extends 'base_auth.html' %}
+
+{% load static %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+            <div class="card mt-5">
+                <div class="card-body">
+                    <div class="card-title">
+                        <h5>Register for a new account</h5>
+                    </div>
+
+                    <form action="{% url 'register' %}" method="post">
+                        {% csrf_token %}
+                        {% include 'partials/_messages.html' %}
+                        
+                        <div class="form-group">
+                            <input class="form-control form-control-sm" type="text" placeholder="Username" name="username" value="{{ fieldValues.username }}" id="usernameField">
+                        </div>
+                        <div id="username-feedback" class="invalid-feedback" style="display:none"></div>
+
+                        <div class="form-group">
+                            <input class="form-control form-control-sm" type="email" placeholder="Email" name="email" value="{{ fieldValues.email }}" id="emailField">
+                        </div>
+                        <div id="email-feedback" class="invalid-feedback" style="display:none"></div>
+
+                        <div class="form-group">
+                            <input class="form-control form-control-sm passClass" type="password" placeholder="Password" name="password" id="passwordField">
+                            <small class="float-right py-1 showPasswordToggle">SHOW</small>
+                        </div>
+                        <div id="password-feedback" class="invalid-feedback" style="display:none"></div>
+
+                        <div class="form-group">
+                            <input class="form-control form-control-sm passClass" type="password" placeholder="Confirm Password" name="confirm" id="confirmField">
+                            <small class="float-right py-1 showPasswordToggle">SHOW</small>
+                        </div>
+                        <div id="confirm-feedback" class="invalid-feedback" style="display:none"></div>
+
+                        <div class="form-group">
+                            <input class="form-control form-control-sm btn btn-primary" type="submit" value="Register">
+                        </div>
+                    
+                    </form>
+                    
+                    <div class="container">
+                        <span class="text-lead lead">Already have an account? <a href="{% url 'login' %}">Login Here</a></span><br>
+                        <span class="text-lead lead">Forgot your password? <a href="{% url 'reset-password' %}">Reset Password</a></span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-4"></div>
+    </div>
+
+    <script src="{% static 'js/register.js' %}"></script>
+    <script src="{% static 'js/showPass.js' %}"></script>
+
+{% endblock %}
