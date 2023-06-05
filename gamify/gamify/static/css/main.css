@@ -1,0 +1,28 @@
+.user-setting > button.round {
+    position: absolute;
+    right: 0px;
+    margin: 15px 20px;
+    height: 40px;
+    width: 40px;
+    border: none;
+    border-radius: 50%;
+    /*color selector -- if background too dark then switch text color*/
+    background-color: green;
+    color: white;
+}
+
+.user-setting > .settings {
+    border: solid 1px lightgrey;
+    border-radius: 5%;
+    margin: 70px 20px;
+    padding: 10px;
+    height: 400px;
+    width: 300px;
+    overflow: scroll;
+    position: absolute;
+    right: 0px;
+}
+
+.user-setting > .settings::-webkit-scrollbar {
+    display: none;
+}

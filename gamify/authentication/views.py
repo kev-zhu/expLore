@@ -42,6 +42,7 @@ def login(request):
                     auth.login(request, user)
                     messages.success(request, f'Welcome {user.username}!')
                     #redirect to main page
+                    return redirect('overview')
                 else:
                     #account not activated -- this never runs bc auth.athenticate returns None if account is not active -- resulting in never checking if/else statement if is_active
                     messages.error(request, 'Account is not active, please verify your account first.')
@@ -56,12 +57,16 @@ def login(request):
 
 
 def logout(request):
-    #if it is a get request, then redirect back to main page
-    #main page requires login so if not logged in then redirect to login page
+    #post signs user off
     if request.method == 'POST':
         auth.logout(request)
         messages.success(request, 'You have logged out.')
         return redirect('login')
+
+    #if anything but a post request, then redirect back to main page
+    #main page requires login so if not logged in then redirect to login page
+    #simulates 'this get link does nothing'
+    return redirect('overview')
 
 
 def register(request):
