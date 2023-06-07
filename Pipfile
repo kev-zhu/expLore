@@ -9,6 +9,7 @@ psycopg2-binary = "*"
 validate-email = "*"
 six = "*"
 certifi = "*"
+requests = "*"
 
 [dev-packages]
 

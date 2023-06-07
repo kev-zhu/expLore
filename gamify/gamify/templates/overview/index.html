@@ -2,23 +2,39 @@
 
 {% load static %}
 
+{% block style %}
+<link href="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css" rel="stylesheet">
+<script src="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"></script>
+<!-- <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.1/mapbox-gl-directions.js"></script>
+<link rel="stylesheet"
+    href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.1/mapbox-gl-directions.css"
+    type="text/css"> -->
+<script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
+<link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css" type="text/css">    
+{% endblock %}
+
 {% block content %}
-    <!-- {% include 'partials/_messages.html' %} -->
+<!-- {% include 'partials/_messages.html' %} -->
+<div id="map"></div>
 
-    <div class="user-setting">
-        <button class="round" id="setting-button">K</button>
+<div class="user-setting">
+    <button class="round" id="setting-button">
+        {{user.username | capfirst | slice:"0:1"}}
+    </button>
 
-        <div class="settings" id="user-settings" hidden>
+    <div class="settings" id="user-settings" hidden>
 
-            <form action="{% url 'logout' %}" method="post">
-                {% csrf_token %}
-                <input type=submit value="Sign Out">
-            </form>
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <input class="form-control" type="submit" value="Sign Out">
+            </div>
+        </form>
 
-        </div>
     </div>
+</div>
 
+<script src="{% static 'js/load-map.js' %}"></script>
+<script src="{% static 'js/user-setting.js' %}"></script>
 
-
-    <script src="{% static 'js/user-setting.js' %}"></script>
 {% endblock %}
