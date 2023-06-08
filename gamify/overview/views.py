@@ -37,6 +37,9 @@ def get_poi(request):
 
 
 def get_yelp_top_10(lat, lng, type, area):
+    #may need a new api or something? note - does not work on international area?
+    #this would return an error or an empty json file
+    #look into google's api?
     yelp_api = os.environ.get('YELP_API_KEY')
     url = f'https://api.yelp.com/v3/businesses/search?latitude={lat}&longitude={lng}&term={type}&radius=5000&categories=&sort_by=best_match&limit=10'
     headers = {
