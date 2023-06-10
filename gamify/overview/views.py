@@ -40,7 +40,7 @@ def get_poi(request):
 def get_yelp_top_10(lat, lng, type, area):
     #may need a new api or something? note - does not work on international area?
     #this would return an error or an empty json file
-    #look into google's api?
+    #look into google's api? more locations + international spots -- yelp limited 
     yelp_api = os.environ.get('YELP_API_KEY')
     url = f'https://api.yelp.com/v3/businesses/search?latitude={lat}&longitude={lng}&term={type}&radius=5000&categories=&sort_by=best_match&limit=10'
     headers = {
@@ -72,7 +72,7 @@ def save_area(request):
     if request.method == "POST":
         data = json.loads(request.body)
         if (Area.objects.filter(user=request.user, referredName=data['refName']).count() == 0):
-            Area.objects.create(user=request.user, displayName=data['display'] or data['refName'], referredName=data['refName'])
+            Area.objects.create(user=request.user, displayName=data['display'] or data['refName'], referredName=data['refName'], lat=data['lat'], lng=data['lng'])
         return JsonResponse({'success': 'Area has been added to DB'})
     return JsonResponse({'error': 'Request must be post'})
 
@@ -94,3 +94,12 @@ def del_area(request):
         return JsonResponse({'success': 'Area has been deleted from DB'})
     except:
         return JsonResponse({'error': 'Area not in DB'})
+
+
+#include spots later on
+@login_required
+def get_all_saved(request):
+    all_area = Area.objects.filter(user=request.user)
+    areas = list(map(model_to_dict, all_area))
+    spots = ''
+    return JsonResponse({'areas': areas, 'spots': ''})

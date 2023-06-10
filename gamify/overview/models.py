@@ -27,6 +27,8 @@ class Area(models.Model):
     user = models.ForeignKey(to=User, on_delete=models.CASCADE, null=False)
     displayName = models.CharField()
     referredName = models.CharField()
+    lat = models.FloatField(default=None, null=False, blank=False)
+    lng = models.FloatField(default=None, null=False, blank=False)
     
     def __str__(self):
         return f'{self.user.username}: {self.displayName}'

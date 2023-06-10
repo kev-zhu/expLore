@@ -56,9 +56,12 @@ favLoc.addEventListener('click', () => {
         toggleModal()
         //delete area from DB
         delArea()
+        viewingLoc.innerHTML = referName
+        delete savedAreas[referName]
     } else {
+        //occupy form but not save into DB until confirmation 
         modalRef.value = referName
-        modalDisplay.placeholder = displayName || referName
+        modalDisplay.placeholder = referName
     }
 })
 
@@ -66,15 +69,21 @@ favLoc.addEventListener('click', () => {
 //save area from modal onto DB
 saveLoc.addEventListener('click', () => {
     //fetch call to DB
+    const locPos = map.getCenter()
     fetch('/save-area', {
         body: JSON.stringify({
             refName: referName,
-            display: modalDisplay.value
+            display: modalDisplay.value,
+            lng: locPos.lng,
+            lat: locPos.lat
         }),
         method: 'POST'
     })
     favorited = true
     star.innerHTML = '&#9733'
+    displayName = modalDisplay.value || modalRef.value
+    viewingLoc.innerHTML = displayName
+    savedAreas[referName] = exploringMarkers
     //toggle modal only after it has been saved
     toggleModal()
 })
@@ -98,3 +107,6 @@ collapsable.onclick = () => {
         collapsable.innerHTML = "&lt;"
     }
 }
+
+
+//work on filter buttons
