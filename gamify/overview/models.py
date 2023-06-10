@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 
@@ -20,6 +21,12 @@ class Business(models.Model):
 
     def __str__(self):
         return f'{self.type}: {self.area} - {self.name}'
+        
 
-    def serialize(self):
-        return 
+class Area(models.Model):
+    user = models.ForeignKey(to=User, on_delete=models.CASCADE, null=False)
+    displayName = models.CharField()
+    referredName = models.CharField()
+    
+    def __str__(self):
+        return f'{self.user.username}: {self.displayName}'

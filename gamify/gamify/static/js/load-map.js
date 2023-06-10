@@ -2,15 +2,17 @@
 mapboxgl.accessToken = 'pk.eyJ1Ijoia2V2aW56aHUzNSIsImEiOiJjbGlqZDlucXYwNjZuM3Fxdmd6eTNhMDlrIn0.ULZWndcTJElOGpeFuBAXEw';
 
 const markerStartDiameter = 40
-
 let currentLoc = null
 let spinEnabled = true
+
+//separate function? --> let map = null + function to call at the beginning renderStartMap()?
 let map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/streets-v12',
     zoom: 2,
 })
 
+//eventlistener for enlarging marker size when map zoomed
 map.on('zoom', () => {
     const markers = document.querySelectorAll('.marker')
     let adjustedIconZoom = 1 + (map.getZoom() - 13) / 2.5
@@ -25,7 +27,7 @@ map.on('zoom', () => {
     })
 })
 
-//search
+//search for place
 const geocoder = map.addControl(
     new MapboxGeocoder({
         accessToken: mapboxgl.accessToken,
@@ -39,13 +41,18 @@ const geocoder = map.addControl(
         //function to clear all pins
         //function to add all userly saved pins -- prob have to use a fetch to server api to get locations of where user saved
 
+        //question: is this efficient? what if many pins -- then a lot of looping?
+            //maybe have another set of id/class "exploring" where if marker has classname = exploring -- rmeove them if going to new area
+            //this prevent the need to rerendering ALL of the markers (exploring + saved ones)
+            //can cut down on runtime/memory bc no need to rerender saved ones
+            //few ways to do this: global var of currentlyExploringMarkers[] -- add to these + remove from this list when searching/hopping around
         //when checking out new area, remove all old pins from prev area that are not saved to user's saved data
         //this prevents overcrowding of pins
     }),
     'top-left'
 )
 
-
+//use lng,lat to retrieve data from server of that area
 const pinnedMarker = (ln, lt, area) => {
     //change type= to read off window/selected buttons -- activity + food
     fetch(`/get-poi?lng=${ln}&lat=${lt}&area=${area}&type=activity+food`)
@@ -79,8 +86,21 @@ const reverseGeoSearch = ([lng, lat]) => {
     fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${mapboxgl.accessToken}`)
     .then(res => res.json())
     .then(data => {
-        const area = data.features[3].place_name
-        pinnedMarker(lng, lat, area)
+        const place = data.features.reduce((prevFeature, feature) => feature.place_type[0] === 'place' ? feature : null || prevFeature, null)
+
+        if (place !== null) {
+            const area = place.place_name
+            //fetch area name from DB -- get the display name, not the target name
+            //try to fetch the name from DB -- see if it is saved, if not then use the area name, if so, use the saved display name
+            
+            //value get passed in here depends on value of the fetch call, not the area itself
+            setViewingLoc(area)
+            
+            //separate pinnedMarker + reverseGeoSearch for the sake of reuseability of the fetch call later
+            //when adding a new location on map, prob would want to use revGeoCall to reduce the search down to the place becasue place.place_name == one of the "key" to filter locations
+            //pinnedMarker get and save area based on area referred name, not display name
+            pinnedMarker(lng, lat, area)
+        }
     })
 }
 
@@ -153,6 +173,8 @@ const startMapApp = () => {
 }
 
 
+
+
 //if user does not have set geolocation -- they can still have pinned/saved locations
     //ensure that pins are tehre + rotation even if no set geolocation
     //start map --> load saved locations --> getgeoloc
@@ -165,15 +187,3 @@ const run = async () => {
 }
 
 run()
-
-
-
-// // // https://docs.mapbox.com/mapbox-gl-js/api/map/#map.event:styleimagemissing
-// // // map.on('style.load', () => {
-// // //     document.querySelector('#map').removeAttribute('hidden')
-// // // })
-
-// // // map.on('data', (e) => {
-// // //     console.log('asd')
-// // //     console.log(e.lngLat)
-// // // })

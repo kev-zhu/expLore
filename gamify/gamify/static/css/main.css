@@ -1,7 +1,20 @@
-.user-setting > button.round {
+.on-map-buttons {
+    display: flex;
     position: absolute;
     right: 0px;
-    margin: 15px 20px;
+    margin-top: 15px;
+}
+
+#hide-btn, .collapse-horizontal {
+    float: right;
+    background-color: white;
+    margin: auto;
+    margin-right: 20px;
+    border-radius: 10px;
+}
+
+.user-setting > button.round {
+    margin-right: 20px;
     height: 40px;
     width: 40px;
     border: none;
@@ -20,16 +33,16 @@ div#map {
 }
 
 .user-setting > .settings {
+    position: absolute;
+    overflow: scroll;
+    right: 0px;
+    margin: 20px;
+    padding: 10px;
     border: solid 1px lightgrey;
     background: white;
     border-radius: 5%;
-    margin: 70px 20px;
-    padding: 10px;
     height: 400px;
     width: 300px;
-    overflow: scroll;
-    position: absolute;
-    right: 0px;
 }
 
 .user-setting > .settings::-webkit-scrollbar {
@@ -54,7 +67,10 @@ body {
     cursor: pointer;
 }
 
-
 .mapboxgl-popup {
     max-width: 200px;
+}
+
+#star {
+    color: orange;
 }

@@ -3,9 +3,10 @@ from django.contrib.auth.decorators import login_required
 
 import os
 import requests
-from .models import Business
+from .models import Business, Area
 from django.forms.models import model_to_dict
 from django.http import JsonResponse
+import json
 
 # Create your views here.
 
@@ -64,3 +65,32 @@ def get_yelp_top_10(lat, lng, type, area):
             reviewCount = business['review_count'],
             yelpLink = business['url']
         )
+
+
+@login_required
+def save_area(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        if (Area.objects.filter(user=request.user, referredName=data['refName']).count() == 0):
+            Area.objects.create(user=request.user, displayName=data['display'] or data['refName'], referredName=data['refName'])
+        return JsonResponse({'success': 'Area has been added to DB'})
+    return JsonResponse({'error': 'Request must be post'})
+
+
+@login_required
+def get_savedArea(request, area):
+    try: 
+        savedArea = Area.objects.get(user=request.user, referredName=area)
+        return JsonResponse({'displayName': savedArea.displayName})
+    except:
+        return JsonResponse({'displayName': ''})
+
+
+@login_required
+def del_area(request):
+    data = json.loads(request.body)
+    try:
+        Area.objects.get(user=request.user, referredName=data['refName']).delete()
+        return JsonResponse({'success': 'Area has been deleted from DB'})
+    except:
+        return JsonResponse({'error': 'Area not in DB'})
