@@ -7,6 +7,10 @@ const saveLoc = document.querySelector('#saveLocation')
 const modalRef = document.querySelector('#referName')
 const modalDisplay = document.querySelector('#displayName')
 
+const barButton = document.querySelector('#barButton')
+const foodButton = document.querySelector('#foodButton')
+const activityButton = document.querySelector('#activityButton')
+
 //this should be a fetch call to see if currently@ is favorited or not
 //onto the location's model of DB -- also need name of place
 let favorited = false
@@ -109,4 +113,65 @@ collapsable.onclick = () => {
 }
 
 
-//work on filter buttons
+//generic filter types -- easier to modify in the future
+const filterTypes = [
+    {
+        'btnElement': barButton,
+        'type': 'bar',
+        'color': 'red'
+    },
+    {
+        'btnElement': foodButton,
+        'type': 'food',
+        'color': 'green'
+        
+    },
+    {
+        'btnElement': activityButton,
+        'type': 'activity',
+        'color': 'blue'
+        
+    }
+]
+
+filterTypes.forEach(generic => {
+    generic.btnElement.addEventListener('click', () => {
+        if (generic.btnElement.style.backgroundColor === generic.color) {
+            generic.btnElement.style.backgroundColor = ''
+            activeFilters.splice(activeFilters.indexOf(generic.type), 1)
+            toggleFilterButtons(generic.type, false)
+        } else {
+            generic.btnElement.style.backgroundColor = generic.color
+            activeFilters.push(generic.type)
+            toggleFilterButtons(generic.type, true)
+        }
+    })
+})
+
+
+const toggleFilterButtons = (type, active) => {
+    //toggle saved areas
+    if (active) {
+        Object.keys(savedAreas).forEach(area => {
+            savedAreas[area][type].forEach(marker => {
+                marker.addTo(map)
+            })
+        })
+        if (Object.keys(exploringMarkers).length !== 0) {
+            exploringMarkers[type].forEach(marker => {
+                marker.addTo(map)
+            })
+        }
+    } else {
+        Object.keys(savedAreas).forEach(area => {
+            savedAreas[area][type].forEach(marker => {
+                marker.remove()
+            })
+        })
+        if (Object.keys(exploringMarkers).length !== 0) {
+            exploringMarkers[type].forEach(marker => {
+                marker.remove(map)
+            })
+        }
+    }
+}

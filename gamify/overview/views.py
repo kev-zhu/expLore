@@ -21,17 +21,20 @@ def index(request):
 @login_required(login_url='/authentication/login')
 def get_poi(request):
     if request.method == 'GET':
+        businesses = []
+        if request.GET['type'] == '':
+            return JsonResponse({'businesses': businesses})
+
         lat = request.GET['lat']
         lng = request.GET['lng']
         area = request.GET['area']
         types=request.GET['type'].split(' ')
 
-        businesses = []
 
-        for bType in types:
-            if Business.objects.filter(area=area, type=bType).count() < 10:
-                get_yelp_top_10(lat, lng, bType, area)
-            for business in Business.objects.filter(area=area, type=bType):
+        for businessType in types:
+            if Business.objects.filter(area=area, type=businessType).count() == 0:
+                get_yelp_top_10(lat, lng, businessType, area)
+            for business in Business.objects.filter(area=area, type=businessType):
                 businesses.append(model_to_dict(business))
 
     return JsonResponse({'businesses': businesses})

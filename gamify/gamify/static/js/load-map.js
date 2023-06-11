@@ -1,11 +1,12 @@
 //change so accessToken is hidden from client-end?
 mapboxgl.accessToken = 'pk.eyJ1Ijoia2V2aW56aHUzNSIsImEiOiJjbGlqZDlucXYwNjZuM3Fxdmd6eTNhMDlrIn0.ULZWndcTJElOGpeFuBAXEw';
 
-let savedAreas = {}
-let exploringMarkers = []
 const markerStartDiameter = 40
 let currentLoc = null
 let spinEnabled = true
+let savedAreas = {}
+let exploringMarkers = {}
+let activeFilters = []
 
 //separate function? --> let map = null + function to call at the beginning renderStartMap()?
 let map = new mapboxgl.Map({
@@ -40,17 +41,6 @@ const geocoder = map.addControl(
             spinEnabled = false
             clearExploringMarkers()
             reverseGeoSearch(res.result.geometry.coordinates)
-
-            //function to clear all pins
-            //function to add all userly saved pins -- prob have to use a fetch to server api to get locations of where user saved
-
-            //question: is this efficient? what if many pins -- then a lot of looping?
-            //maybe have another set of id/class "exploring" where if marker has classname = exploring -- rmeove them if going to new area
-            //this prevent the need to rerendering ALL of the markers (exploring + saved ones)
-            //can cut down on runtime/memory bc no need to rerender saved ones
-            //few ways to do this: global var of currentlyExploringMarkers[] -- add to these + remove from this list when searching/hopping around
-            //when checking out new area, remove all old pins from prev area that are not saved to user's saved data
-            //this prevents overcrowding of pins
         }),
     'top-left'
 )
@@ -58,12 +48,23 @@ const geocoder = map.addControl(
 //use lng,lat to retrieve data from server of that area
 const makeMarker = async (ln, lt, rName) => {
     //change type= to read off window/selected buttons -- activity + food
-    const currentMarkers = []
-    await fetch(`/get-poi?lng=${ln}&lat=${lt}&area=${rName}&type=activity+food`)
+    const currentMarkers = {}
+    await fetch(`/get-poi?lng=${ln}&lat=${lt}&area=${rName}&type=food+activity+bar`)
         .then(res => res.json())
         .then(data => {
             data.businesses.forEach(business => {
-                const color = business.type === 'food' ? 'green' : 'blue'
+                if (!(business.type in currentMarkers)) {
+                    currentMarkers[business.type] = []
+                }
+                
+                let color = null
+                if (business.type === 'food') {
+                    color = 'green'
+                } else if (business.type === 'bar') {
+                    color = 'red'
+                } else if (business.type === 'activity') {
+                    color = 'blue'
+                }
 
                 const popup = new mapboxgl.Popup({ offset: 25 }).setText(
                     business.name
@@ -77,10 +78,10 @@ const makeMarker = async (ln, lt, rName) => {
                 el.style.backgroundSize = '100%'
                 el.style.border = `2px solid ${color}`
 
-                currentMarkers.push(new mapboxgl.Marker(el)
+                currentMarkers[business.type].push(new mapboxgl.Marker(el)
                     .setLngLat([business.lng, business.lat])
                     .setPopup(popup)
-                    .addTo(map)
+                    // .addTo(map)
                 )
             })
         }
@@ -90,7 +91,7 @@ const makeMarker = async (ln, lt, rName) => {
 
 const clearExploringMarkers = () => {
     if (!favorited) {
-        exploringMarkers.forEach(marker => {
+        Object.values(exploringMarkers).flat(1).forEach(marker => {
             marker.remove()
         })
     }
@@ -115,6 +116,9 @@ const reverseGeoSearch = ([lng, lat]) => {
                 } else {    
                     //makeMarker get and save area based on area referred name, not display name
                     exploringMarkers = await makeMarker(lng, lat, area)
+                    activeFilters.forEach(filter => {
+                        toggleFilterButtons(filter, true)
+                    })
                 }
             }
         })
@@ -195,8 +199,6 @@ const getSaved = async () => {
 
 
 
-//if user does not have set geolocation -- they can still have pinned/saved locations
-//ensure that pins are tehre + rotation even if no set geolocation
 //start map --> load saved locations --> getgeoloc
 const run = async () => {
     startMapApp()
