@@ -33,7 +33,7 @@ const setViewingLoc = async (newLoc) => {
     referName = newLoc
     displayName = null
     
-    await fetch(`get-savedArea/${referName}`)
+    await fetch(`get-savedArea/${referName}/${exploringZip}`)
         .then(res => res.json())
         .then(data => {
             displayName = data.displayName || referName
@@ -61,7 +61,7 @@ favLoc.addEventListener('click', () => {
         //delete area from DB
         delArea()
         viewingLoc.innerHTML = referName
-        delete savedAreas[referName]
+        delete savedAreas[exploringZip]
     } else {
         //occupy form but not save into DB until confirmation 
         modalRef.value = referName
@@ -79,7 +79,8 @@ saveLoc.addEventListener('click', () => {
             refName: referName,
             display: modalDisplay.value,
             lng: locPos.lng,
-            lat: locPos.lat
+            lat: locPos.lat,
+            zipCode: exploringZip
         }),
         method: 'POST'
     })
@@ -87,7 +88,10 @@ saveLoc.addEventListener('click', () => {
     star.innerHTML = '&#9733'
     displayName = modalDisplay.value || modalRef.value
     viewingLoc.innerHTML = displayName
-    savedAreas[referName] = exploringMarkers
+    savedAreas[exploringZip] = {
+        "refName": referName,
+        "markers": exploringMarkers
+    }
     //toggle modal only after it has been saved
     toggleModal()
 })
@@ -96,7 +100,8 @@ saveLoc.addEventListener('click', () => {
 const delArea = () => {
     fetch('/del-area', {
         body: JSON.stringify({
-            refName: referName
+            refName: referName,
+            zipCode: exploringZip
         }),
         method: 'POST'
     })
@@ -118,18 +123,18 @@ const filterTypes = [
     {
         'btnElement': barButton,
         'type': 'bar',
-        'color': 'red'
+        'color': 'rgb(252, 185, 185)'
     },
     {
         'btnElement': foodButton,
         'type': 'food',
-        'color': 'green'
+        'color': 'rgb(168, 224, 150)'
         
     },
     {
         'btnElement': activityButton,
         'type': 'activity',
-        'color': 'blue'
+        'color': 'rgb(130, 199, 252)'
         
     }
 ]
@@ -153,7 +158,7 @@ const toggleFilterButtons = (type, active) => {
     //toggle saved areas
     if (active) {
         Object.keys(savedAreas).forEach(area => {
-            savedAreas[area][type].forEach(marker => {
+            savedAreas[area]['markers'][type].forEach(marker => {
                 marker.addTo(map)
             })
         })
@@ -164,7 +169,7 @@ const toggleFilterButtons = (type, active) => {
         }
     } else {
         Object.keys(savedAreas).forEach(area => {
-            savedAreas[area][type].forEach(marker => {
+            savedAreas[area]['markers'][type].forEach(marker => {
                 marker.remove()
             })
         })

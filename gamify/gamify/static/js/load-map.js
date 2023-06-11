@@ -6,6 +6,7 @@ let currentLoc = null
 let spinEnabled = true
 let savedAreas = {}
 let exploringMarkers = {}
+let exploringZip = null
 let activeFilters = []
 
 //separate function? --> let map = null + function to call at the beginning renderStartMap()?
@@ -46,10 +47,10 @@ const geocoder = map.addControl(
 )
 
 //use lng,lat to retrieve data from server of that area
-const makeMarker = async (ln, lt, rName) => {
+const makeMarker = async (ln, lt, rName, zip) => {
     //change type= to read off window/selected buttons -- activity + food
     const currentMarkers = {}
-    await fetch(`/get-poi?lng=${ln}&lat=${lt}&area=${rName}&type=food+activity+bar`)
+    await fetch(`/get-poi?lng=${ln}&lat=${lt}&area=${rName}&zip=${exploringZip || zip}&type=food+activity+bar`)
         .then(res => res.json())
         .then(data => {
             data.businesses.forEach(business => {
@@ -98,24 +99,25 @@ const clearExploringMarkers = () => {
 }
 
 //fetch data on load -- put this into a function later for search changes
-const reverseGeoSearch = ([lng, lat]) => {
-    fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${mapboxgl.accessToken}`)
+const reverseGeoSearch = async ([lng, lat]) => {
+    await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${mapboxgl.accessToken}`)
         .then(res => res.json())
         .then(async (data) => {
             const place = data.features.reduce((prevFeature, feature) => feature.place_type[0] === 'place' ? feature : null || prevFeature, null)       
 
             if (place !== null) {
                 const area = place.place_name
-                //value get passed in here depends on value of the fetch call, not the saved area name itself
+                exploringZip = data.features.reduce((prevFeature, feature) => feature.place_type[0] === 'postcode' ? feature : null || prevFeature, null).text
+                
                 setViewingLoc(area)
 
                 //prevention of rerendering pins alraedy loaded from saved list
-                const alreadyOnSavedList = Object.keys(savedAreas).reduce((exists, checkArea) => exists || place.place_name === checkArea, false)
+                const alreadyOnSavedList = Object.keys(savedAreas).reduce((exists, checkArea) => exists || exploringZip === checkArea, false)
                 if (alreadyOnSavedList) {
-                    exploringMarkers = savedAreas[area]
+                    exploringMarkers = savedAreas[exploringZip].markers
                 } else {    
                     //makeMarker get and save area based on area referred name, not display name
-                    exploringMarkers = await makeMarker(lng, lat, area)
+                    exploringMarkers = await makeMarker(lng, lat, area, exploringZip)
                     activeFilters.forEach(filter => {
                         toggleFilterButtons(filter, true)
                     })
@@ -191,8 +193,11 @@ const getSaved = async () => {
             const areas = data.areas
             areas.forEach(async (area) => {
                 //load saved area markers onto the map
-                const currentMarkers = await makeMarker(area.lng, area.lat, area.referredName)
-                savedAreas[area.referredName] = currentMarkers
+                const currentMarkers = await makeMarker(area.lng, area.lat, area.referredName, area.areaCode)
+                savedAreas[area.areaCode] = {
+                    "refName": area.referredName,
+                    "markers": currentMarkers
+                }
             })
         })
 }

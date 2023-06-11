@@ -7,6 +7,7 @@ class Business(models.Model):
     #filter by
     type = models.CharField()
     area = models.CharField()
+    zipSearch = models.CharField(default=None, null=False, blank=False)
 
     #important info of business
     lat = models.FloatField()
@@ -27,6 +28,7 @@ class Area(models.Model):
     user = models.ForeignKey(to=User, on_delete=models.CASCADE, null=False)
     displayName = models.CharField()
     referredName = models.CharField()
+    areaCode = models.CharField(default=None, null=False, blank=False)
     lat = models.FloatField(default=None, null=False, blank=False)
     lng = models.FloatField(default=None, null=False, blank=False)
     

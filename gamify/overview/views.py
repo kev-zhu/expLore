@@ -28,24 +28,25 @@ def get_poi(request):
         lat = request.GET['lat']
         lng = request.GET['lng']
         area = request.GET['area']
+        zip = request.GET['zip']
         types=request.GET['type'].split(' ')
 
 
         for businessType in types:
-            if Business.objects.filter(area=area, type=businessType).count() == 0:
-                get_yelp_top_10(lat, lng, businessType, area)
-            for business in Business.objects.filter(area=area, type=businessType):
+            if Business.objects.filter(area=area, zipSearch=zip, type=businessType).count() == 0:
+                get_yelp_top_10(lat, lng, businessType, area, zip)
+            for business in Business.objects.filter(area=area, zipSearch=zip, type=businessType):
                 businesses.append(model_to_dict(business))
 
     return JsonResponse({'businesses': businesses})
 
 
-def get_yelp_top_10(lat, lng, type, area):
+def get_yelp_top_10(lat, lng, type, area, zip):
     #may need a new api or something? note - does not work on international area?
     #this would return an error or an empty json file
     #look into google's api? more locations + international spots -- yelp limited 
     yelp_api = os.environ.get('YELP_API_KEY')
-    url = f'https://api.yelp.com/v3/businesses/search?latitude={lat}&longitude={lng}&term={type}&radius=5000&categories=&sort_by=best_match&limit=10'
+    url = f'https://api.yelp.com/v3/businesses/search?location={zip}&latitude={lat}&longitude={lng}&term={type}&radius=5000&categories=&sort_by=best_match&limit=10'
     headers = {
         'Authorization': f'Bearer {yelp_api}'
     }
@@ -57,6 +58,7 @@ def get_yelp_top_10(lat, lng, type, area):
         Business.objects.create(
             type = type,
             area = area,
+            zipSearch = zip,
 
             lat = business['coordinates']['latitude'],
             lng = business['coordinates']['longitude'],
@@ -74,16 +76,18 @@ def get_yelp_top_10(lat, lng, type, area):
 def save_area(request):
     if request.method == "POST":
         data = json.loads(request.body)
-        if (Area.objects.filter(user=request.user, referredName=data['refName']).count() == 0):
-            Area.objects.create(user=request.user, displayName=data['display'] or data['refName'], referredName=data['refName'], lat=data['lat'], lng=data['lng'])
+        print('saving')
+        if (Area.objects.filter(user=request.user, referredName=data['refName'], areaCode=data['zipCode']).count() == 0):
+            Area.objects.create(user=request.user, displayName=data['display'] or data['refName'], referredName=data['refName'], lat=data['lat'], lng=data['lng'], areaCode=data['zipCode'])
+        print('saved')
         return JsonResponse({'success': 'Area has been added to DB'})
     return JsonResponse({'error': 'Request must be post'})
 
 
 @login_required
-def get_savedArea(request, area):
+def get_savedArea(request, area, zip):
     try: 
-        savedArea = Area.objects.get(user=request.user, referredName=area)
+        savedArea = Area.objects.get(user=request.user, referredName=area, areaCode=zip)
         return JsonResponse({'displayName': savedArea.displayName})
     except:
         return JsonResponse({'displayName': ''})
@@ -93,7 +97,7 @@ def get_savedArea(request, area):
 def del_area(request):
     data = json.loads(request.body)
     try:
-        Area.objects.get(user=request.user, referredName=data['refName']).delete()
+        Area.objects.get(user=request.user, referredName=data['refName'], areaCode=data['zipCode']).delete()
         return JsonResponse({'success': 'Area has been deleted from DB'})
     except:
         return JsonResponse({'error': 'Area not in DB'})
