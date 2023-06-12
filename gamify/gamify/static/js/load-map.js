@@ -2,11 +2,10 @@
 mapboxgl.accessToken = 'pk.eyJ1Ijoia2V2aW56aHUzNSIsImEiOiJjbGlqZDlucXYwNjZuM3Fxdmd6eTNhMDlrIn0.ULZWndcTJElOGpeFuBAXEw';
 
 const markerStartDiameter = 40
-let currentLoc = null
+let currentLoc, exploringZip
 let spinEnabled = true
 let savedAreas = {}
 let exploringMarkers = {}
-let exploringZip = null
 let activeFilters = []
 
 //separate function? --> let map = null + function to call at the beginning renderStartMap()?
@@ -18,16 +17,20 @@ let map = new mapboxgl.Map({
 
 //eventlistener for enlarging marker size when map zoomed
 map.on('zoom', () => {
-    const markers = document.querySelectorAll('.marker')
     let adjustedIconZoom = 1 + (map.getZoom() - 13) / 2.5
 
     if (adjustedIconZoom < 1) {
         adjustedIconZoom = 1
     }
 
-    markers.forEach(marker => {
-        marker.style.width = `${markerStartDiameter * adjustedIconZoom}px`
-        marker.style.height = `${markerStartDiameter * adjustedIconZoom}px`
+    map._markers.forEach(marker => {
+        const markerElement = marker.getElement()
+        if (marker._popup) {
+            marker._popup.remove()
+        }
+        markerElement.style.zIndex = ''
+        markerElement.style.width = `${markerStartDiameter * adjustedIconZoom}px`
+        markerElement.style.height = `${markerStartDiameter * adjustedIconZoom}px`
     })
 })
 
@@ -67,7 +70,7 @@ const makeMarker = async (ln, lt, rName, zip) => {
                     color = 'blue'
                 }
 
-                const popup = new mapboxgl.Popup({ offset: 25 }).setText(
+                const popup = new mapboxgl.Popup({ offset: 100 }).setText(
                     business.name
                 )
 
@@ -79,15 +82,54 @@ const makeMarker = async (ln, lt, rName, zip) => {
                 el.style.backgroundSize = '100%'
                 el.style.border = `2px solid ${color}`
 
-                currentMarkers[business.type].push(new mapboxgl.Marker(el)
+                const marker = new mapboxgl.Marker(el)
                     .setLngLat([business.lng, business.lat])
-                    .setPopup(popup)
-                    // .addTo(map)
-                )
+
+                manageMarkerHoverEvents(marker, business)
+
+                currentMarkers[business.type].push(marker)
             })
         }
     )
     return currentMarkers
+}
+
+
+//problem with moving mouse btw markers too fast -- something gets "stuck"
+const manageMarkerHoverEvents = (marker, business) => {
+    const markerElement = marker.getElement()
+    let prevMarkerSize, markerPos, popUp
+
+    markerElement.addEventListener('mouseover', () => {
+        prevMarkerSize = Number(markerElement.style.width.substring(0, markerElement.style.width.length - 2))    
+        markerPos = markerElement.getBoundingClientRect()
+
+        //zoomin pic
+        markerElement.style.width = markerElement.style.height = '200px'
+        markerElement.style.zIndex = '1'
+
+        //load a popup on the side with some info too
+        //function to consturct popup?
+
+        popUp = new mapboxgl.Popup({
+            anchor: 'left',
+            offset: 105,
+            closeButton: false,
+            closeOnClick: false,    
+        })
+        .setHTML(`${business.name}<br>${business.address}<br>Rating: ${business.rating}<br>Reviews: ${business.reviewCount}`)
+
+        marker.setPopup(popUp)
+        marker.togglePopup()
+    })
+
+    markerElement.addEventListener('mousemove', (e) => {
+        if (e.clientX < markerPos.x - 5 || e.clientX > markerPos.x + prevMarkerSize + 5 || e.clientY < markerPos.y - 5 || e.clientY > markerPos.y + prevMarkerSize + 5) {
+            markerElement.style.width = markerElement.style.height = `${prevMarkerSize}px`
+            markerElement.style.zIndex = ''
+            popUp.remove()
+        }
+    })
 }
 
 const clearExploringMarkers = () => {
@@ -125,6 +167,7 @@ const reverseGeoSearch = async ([lng, lat]) => {
             }
         })
 }
+
 
 //get curr location if geolocation turned on
 const getGeoLoc = async () => {

@@ -21,7 +21,8 @@ class Business(models.Model):
     yelpLink = models.CharField()
 
     def __str__(self):
-        return f'{self.type}: {self.area} - {self.name}'
+        return f'{self.zipSearch}: {self.type}: {self.area} - {self.name}'
+
         
 
 class Area(models.Model):
