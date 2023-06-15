@@ -2,7 +2,7 @@
 mapboxgl.accessToken = 'pk.eyJ1Ijoia2V2aW56aHUzNSIsImEiOiJjbGlqZDlucXYwNjZuM3Fxdmd6eTNhMDlrIn0.ULZWndcTJElOGpeFuBAXEw';
 
 const markerStartDiameter = 40
-let currentLoc, exploringZip
+let currentLoc, exploringZip, exploringLoc
 let spinEnabled = true
 let savedAreas = {}
 let exploringMarkers = {}
@@ -43,6 +43,7 @@ const geocoder = map.addControl(
         .on('result', (res) => {
             //enable spin only important for first instance if no geolocation found -- else this does nothing really
             spinEnabled = false
+            exploringLoc = res.result.geometry.coordinates
             clearExploringMarkers()
             reverseGeoSearch(res.result.geometry.coordinates)
         }),
@@ -85,7 +86,7 @@ const makeMarker = async (ln, lt, rName, zip) => {
                 const marker = new mapboxgl.Marker(el)
                     .setLngLat([business.lng, business.lat])
 
-                manageMarkerHoverEvents(marker, business)
+                manageMarkerEvents(marker, business)
 
                 currentMarkers[business.type].push(marker)
             })
@@ -96,7 +97,7 @@ const makeMarker = async (ln, lt, rName, zip) => {
 
 
 //problem with moving mouse btw markers too fast -- something gets "stuck"
-const manageMarkerHoverEvents = (marker, business) => {
+const manageMarkerEvents = (marker, business) => {
     const markerElement = marker.getElement()
     let prevMarkerSize, markerPos, popUp
 
@@ -129,6 +130,10 @@ const manageMarkerHoverEvents = (marker, business) => {
             markerElement.style.zIndex = ''
             popUp.remove()
         }
+    })
+
+    markerElement.addEventListener('click', () => {
+        addMarkerToSide(business)
     })
 }
 
@@ -192,6 +197,7 @@ const getGeoLoc = async () => {
             .addTo(map);
 
         //call stuff to add pinned locations
+        exploringLoc = currentLoc
         reverseGeoSearch(currentLoc)
     } catch {
         console.log('Your geolocation is currently off.')
@@ -239,7 +245,8 @@ const getSaved = async () => {
                 const currentMarkers = await makeMarker(area.lng, area.lat, area.referredName, area.areaCode)
                 savedAreas[area.areaCode] = {
                     "refName": area.referredName,
-                    "markers": currentMarkers
+                    "markers": currentMarkers,
+                    "location": [area.lng, area.lat]
                 }
             })
         })

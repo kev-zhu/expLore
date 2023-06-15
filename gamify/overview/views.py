@@ -12,7 +12,15 @@ import json
 
 @login_required(login_url='/authentication/login')
 def index(request):
-    return render(request, 'overview/index.html')
+    all_area = Area.objects.filter(user=request.user).order_by('displayName')
+    areas = list(map(model_to_dict, all_area))
+    spots = ''
+
+    context = {
+        'areas': areas
+    }
+
+    return render(request, 'overview/index.html', context)
 
 #something to ensure get requests
 

@@ -73,13 +73,13 @@ favLoc.addEventListener('click', () => {
 //save area from modal onto DB
 saveLoc.addEventListener('click', () => {
     //fetch call to DB
-    const locPos = map.getCenter()
+    const locPos = exploringLoc
     fetch('/save-area', {
         body: JSON.stringify({
             refName: referName,
             display: modalDisplay.value,
-            lng: locPos.lng,
-            lat: locPos.lat,
+            lng: locPos[0],
+            lat: locPos[1],
             zipCode: exploringZip
         }),
         method: 'POST'
@@ -90,7 +90,8 @@ saveLoc.addEventListener('click', () => {
     viewingLoc.innerHTML = displayName
     savedAreas[exploringZip] = {
         "refName": referName,
-        "markers": exploringMarkers
+        "markers": exploringMarkers,
+        "location": exploringLoc
     }
     //toggle modal only after it has been saved
     toggleModal()

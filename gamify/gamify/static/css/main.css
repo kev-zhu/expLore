@@ -1,6 +1,7 @@
-.on-map-buttons {
+.on-top-of-map {
     display: flex;
     position: absolute;
+    z-index: 3;
     right: 0px;
     margin-top: 15px;
 }
@@ -73,4 +74,68 @@ body {
 
 #star {
     color: orange;
+}
+
+#sidebar {
+    overflow-y: scroll;
+    position: absolute;
+    z-index: 1;
+    display: none;
+    top: 60px;
+    background-color: white;
+    width: 250px;
+    height: 500px;
+}
+
+#sidebar::-webkit-scrollbar {
+    display: none;
+}
+
+#xSidebar {
+    /* position: absolute;  */
+    right: 0px;
+    background-color:rgb(255, 255, 255, 0.5);
+    z-index: 2;
+    height: 30px;
+    width: 30px;
+    border: none;
+    border-radius: 50%;
+}
+
+#sidebar-btn {
+    position: absolute;
+    z-index: 2;
+    top: 50vh;
+    background-color: white;
+    border: none;
+    opacity: 0.8
+}
+
+.sidebar-header {
+    /* border: 1px solid black; */
+    height: 30px;
+
+    font-size: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.accordion-button:focus {
+    outline: none;
+    box-shadow: none;
+    
+}
+
+.savedArea {
+    white-space: nowrap;
+    overflow-x: clip;
+    padding: 5px;   
+    /* make margin-right less than 250+ have a fading feature as it apporaches
+    add an arrow key to the right side row + show an arrow when hovering */
+}
+
+.savedArea:hover {
+    background-color: rgba(225,225,225,0.5);
 }
