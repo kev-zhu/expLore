@@ -130,13 +130,11 @@ const filterTypes = [
         'btnElement': foodButton,
         'type': 'food',
         'color': 'rgb(168, 224, 150)'
-        
     },
     {
         'btnElement': activityButton,
         'type': 'activity',
         'color': 'rgb(130, 199, 252)'
-        
     }
 ]
 

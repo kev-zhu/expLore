@@ -1,68 +1,77 @@
 {% load static %}
 
-<div id="sidebar">
-    <button class="position-absolute" id="xSidebar">
+<div class="sidebar">
+    <button class="xSidebar">
         <span>x</span>
     </button>
 
-    <div class="sidebar-contents">
-        <div class="sidebar-header">
-            Settings
-        </div>
-
-        <div class="accordion accordion-flush" id="settingAccordion">
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="headingOne">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-                        Saved
-                    </button>
-                </h2>
-                <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#settingAccordion">
-                        {% for area in areas %}
-                        <div class="savedArea" data-zip={{area.areaCode}}>
-                            {{ area.displayName }}
+    <div class="sidebar-content">
+        <div class="sidebar-setting">
+            <div class="sidebar-header">
+                Settings
+            </div>
+    
+            <div class="accordion accordion-flush" id="settingAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingOne">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                            Saved
+                        </button>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#settingAccordion">
+                            {% for area in areas %}
+                            <div class="savedArea" data-zip={{area.areaCode}}>
+                                {{ area.displayName }}
+                            </div>
+                            {% endfor %}
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingTwo">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                            setting button 2
+                        </button>
+                    </h2>
+                    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#settingAccordion">
+                        <div class="accordion-body">
+                            settings 2 in here
                         </div>
-                        {% endfor %}
-                </div>
-            </div>
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="headingTwo">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                        setting button 2
-                    </button>
-                </h2>
-                <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#settingAccordion">
-                    <div class="accordion-body">
-                        settings 2 in here
                     </div>
                 </div>
-            </div>
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="headingThree">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                        setting button 3
-                    </button>
-                </h2>
-                <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#settingAccordion">
-                    <div class="accordion-body">
-                        settings 3 in here
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingThree">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                            setting button 3
+                        </button>
+                    </h2>
+                    <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#settingAccordion">
+                        <div class="accordion-body">
+                            settings 3 in here
+                        </div>
                     </div>
                 </div>
+            </div>              
+        </div>
+    
+        <div class="sidebar-marker">
+            <img src="" id="marker-image" alt="img cannot be loaded">
+            <div>
+                <h5 id="marker-name"></h5>
             </div>
-        </div>  
+            <div id="marker-direction">***DIRECTION ICON</div>
+            <div id="marker-address"></div>
+            <div id="marker-phone"></div>
+            <div id="marker-rating"></div>
+            <div id="marker-review"></div>
+            <div>
+                <a href="https://www.google.com" id="marker-yelp" target="_blank">Check out this location's Yelp!</a>
+            </div>        
+        </div>
     </div>
-
-
-<!-- 
-    <div class="sidebar-contents">
-        setting stuff
-        <button></button>
-        <button></button>
-        <button></button>
-    </div> -->
 </div>
 
-<button id="sidebar-btn">
+
+<button class="sidebar-btn">
     &gt;
 </button>
 

@@ -47,6 +47,7 @@ div#map {
 }
 
 .user-setting > .settings::-webkit-scrollbar {
+    
     display: none;
 }
 
@@ -76,43 +77,77 @@ body {
     color: orange;
 }
 
-#sidebar {
-    overflow-y: scroll;
+.sidebar {
     position: absolute;
     z-index: 1;
-    display: none;
-    top: 60px;
+    overflow: hidden;
     background-color: white;
-    width: 250px;
-    height: 500px;
+    top: 60px;
+    width: 0px;
+    height: calc(100% - 60px);
+    transition: width .2s ease;
 }
 
-#sidebar::-webkit-scrollbar {
+.sidebar.active {
+    width: 250px;
+}
+
+.sidebar::-webkit-scrollbar {
     display: none;
 }
 
-#xSidebar {
-    /* position: absolute;  */
-    right: 0px;
-    background-color:rgb(255, 255, 255, 0.5);
-    z-index: 2;
+.xSidebar { 
+    position: absolute;
+    top: 0;
+    right: 0;
     height: 30px;
     width: 30px;
-    border: none;
+    background-color: inherit;
     border-radius: 50%;
+    z-index: 2;
+    border: none;
 }
 
-#sidebar-btn {
+.xSidebar:hover {
+    filter:brightness(80%)
+}
+
+.sidebar-content {
+    transform:translateX(0);
+    transition: transform 0.1s ease;
+}
+
+.sidebar-content.active {
+    transform:translateX(250px);
+}
+
+.sidebar-setting {
+    position: absolute;
+    width: 250px;
+}
+
+.sidebar-marker {
+    position: absolute;
+    width: 250px;
+    transform: translateX(-250px);
+}
+
+.sidebar-btn {
     position: absolute;
     z-index: 2;
     top: 50vh;
+    left: 0px;
     background-color: white;
     border: none;
-    opacity: 0.8
+    opacity: 0.8;
+    transition: left .2s ease;
+}
+
+.sidebar-btn.active {
+    left: 250px;
 }
 
 .sidebar-header {
-    /* border: 1px solid black; */
     height: 30px;
 
     font-size: 20px;
@@ -132,10 +167,19 @@ body {
     white-space: nowrap;
     overflow-x: clip;
     padding: 5px;   
-    /* make margin-right less than 250+ have a fading feature as it apporaches
-    add an arrow key to the right side row + show an arrow when hovering */
 }
 
 .savedArea:hover {
     background-color: rgba(225,225,225,0.5);
+}
+
+#marker-image {
+    max-width: 250px;
+    max-height: 200px;
+    width: 250px;
+    height: 200px;
+} 
+
+.sidebar-marker > div {
+    border-bottom: 1px solid lightgrey;
 }

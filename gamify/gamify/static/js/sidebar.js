@@ -1,61 +1,61 @@
-const sideBar = document.querySelector('#sidebar')
-const xSideBar = document.querySelector('#xSidebar')
-const collapseSideBarBtn = document.querySelector('#sidebar-btn')
-const defaultSidebarMenu = document.querySelector('.sidebar-contents').innerHTML
+const sideBar = document.querySelector('.sidebar')
+const sideBarBtn = document.querySelector('.sidebar-btn')
+const xSideBar = document.querySelector('.xSidebar')
+const sideContent = document.querySelector('.sidebar-content')
 const sideBarAreas = document.querySelectorAll('.savedArea')
 
-let sideCollapsed = true
-let viewingMarker = false
-let prevOpen = false
+let sidePrevOpen = false
 
-const openSideBar = () => {
-    sideBar.style.display = 'block'
-    collapseSideBarBtn.style.left = '250px'
-    collapseSideBarBtn.innerHTML = '&lt;'
-    sideCollapsed = false
+const sideOpen = () => {
+    sideBar.classList.add('active')
+    sideBarBtn.innerHTML = '&lt;'
+    sideBarBtn.classList.add('active')
 }
 
-const closeSideBar = () => {
-    sideBar.style.display = 'none'
-    collapseSideBarBtn.style.left = '0px'
-    collapseSideBarBtn.innerHTML = '&gt;'
-    sideCollapsed = true
+const sideClose = () => {
+    sideBar.classList.remove('active')
+    sideBarBtn.innerHTML = '&gt;'
+    sideBarBtn.classList.remove('active')
 }
 
-collapseSideBarBtn.addEventListener('click', () => {
-    if (sideCollapsed) {
-        openSideBar()
-        prevOpen = true
-    } else {
-        closeSideBar()
-        prevOpen = false
-    }
-})
 
 xSideBar.addEventListener('click', () => {
-    closeSideBar() 
-    
-    if (viewingMarker) {
-        document.querySelector('.sidebar-contents').innerHTML = defaultSidebarMenu
-        if (prevOpen) {
-            openSideBar()
+    if (sideContent.classList.contains('active')) {
+        sideContent.classList.remove('active')
+        if (!sidePrevOpen) {
+            sideClose()
         }
-        viewingMarker = false
+    } else {
+        sideClose()
+        sidePrevOpen = false
     }
-    prevOpen = false
 })
 
+sideBarBtn.addEventListener("click", () => {
+    if (sideBar.classList.contains('active')) {
+        sideClose()
+        sidePrevOpen = false
+    } else {
+        sideOpen()
+        sidePrevOpen = true
+    }
+})
 
 const addMarkerToSide = (business) => {
-    viewingMarker = true
-    let updatedSideBar = document.querySelector('.sidebar-contents')
+    sideOpen()
+    sideContent.classList.add('active')
 
-    updatedSideBar.innerHTML = business.name
-    openSideBar()
+    const markerSide = document.querySelector('.sidebar-marker')
+    markerSide.querySelector('#marker-image').src = business.img_url
+    markerSide.querySelector('#marker-name').innerHTML = business.name
+    markerSide.querySelector('#marker-address').innerHTML = business.address
+    markerSide.querySelector('#marker-phone').innerHTML = business.phone
+    markerSide.querySelector('#marker-rating').innerHTML = `${business.rating} Stars`
+    markerSide.querySelector('#marker-review').innerHTML = `${business.reviewCount} Reviews`
+    markerSide.querySelector('#marker-yelp').href = business.yelpLink
 
-
-    console.log(business)
 }
+
 
 sideBarAreas.forEach(area => {
     area.addEventListener('click', () => {        
@@ -63,12 +63,11 @@ sideBarAreas.forEach(area => {
 
         map.flyTo({
             center: goToLocation.location,
-            zoom: 13,
+            zoom: 12,
             essential: true
         })
         spinEnabled = false
 
-        console.log(goToLocation)
         exploringZip = area.dataset.zip
         exploringLoc = goToLocation.location
         exploringMarkers = goToLocation.markers
