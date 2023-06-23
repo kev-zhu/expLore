@@ -84,10 +84,8 @@ def get_yelp_top_10(lat, lng, type, area, zip):
 def save_area(request):
     if request.method == "POST":
         data = json.loads(request.body)
-        print('saving')
         if (Area.objects.filter(user=request.user, referredName=data['refName'], areaCode=data['zipCode']).count() == 0):
             Area.objects.create(user=request.user, displayName=data['display'] or data['refName'], referredName=data['refName'], lat=data['lat'], lng=data['lng'], areaCode=data['zipCode'])
-        print('saved')
         return JsonResponse({'success': 'Area has been added to DB'})
     return JsonResponse({'error': 'Request must be post'})
 
@@ -115,6 +113,7 @@ def del_area(request):
 @login_required
 def get_all_saved(request):
     all_area = Area.objects.filter(user=request.user)
-    areas = list(map(model_to_dict, all_area))
+    areas = sorted(list(map(model_to_dict, all_area)), key=lambda x: x['displayName'])
+
     spots = ''
     return JsonResponse({'areas': areas, 'spots': ''})

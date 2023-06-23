@@ -19,11 +19,9 @@
                         </button>
                     </h2>
                     <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#settingAccordion">
-                            {% for area in areas %}
-                            <div class="savedArea" data-zip={{area.areaCode}}>
-                                {{ area.displayName }}
+                            <div class="savedAreas">
+                                
                             </div>
-                            {% endfor %}
                     </div>
                 </div>
                 <div class="accordion-item">
@@ -64,7 +62,7 @@
             <div id="marker-rating"></div>
             <div id="marker-review"></div>
             <div>
-                <a href="https://www.google.com" id="marker-yelp" target="_blank">Check out this location's Yelp!</a>
+                <a href="" id="marker-yelp" target="_blank">Check out this location's Yelp!</a>
             </div>        
         </div>
     </div>

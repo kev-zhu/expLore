@@ -2,7 +2,8 @@
 mapboxgl.accessToken = 'pk.eyJ1Ijoia2V2aW56aHUzNSIsImEiOiJjbGlqZDlucXYwNjZuM3Fxdmd6eTNhMDlrIn0.ULZWndcTJElOGpeFuBAXEw';
 
 const markerStartDiameter = 40
-let currentLoc, exploringZip, exploringLoc
+let currMarkerDiameter = markerStartDiameter
+let currentLoc, exploringZip, exploringLoc, hoveringMarker
 let spinEnabled = true
 let savedAreas = {}
 let exploringMarkers = {}
@@ -29,26 +30,45 @@ map.on('zoom', () => {
             marker._popup.remove()
         }
         markerElement.style.zIndex = ''
-        markerElement.style.width = `${markerStartDiameter * adjustedIconZoom}px`
-        markerElement.style.height = `${markerStartDiameter * adjustedIconZoom}px`
+        currMarkerDiameter = markerStartDiameter * adjustedIconZoom
+        markerElement.style.width = `${currMarkerDiameter}px`
+        markerElement.style.height = `${currMarkerDiameter}px`
     })
 })
 
+
+//when out of focus of window, revert marker back to original size
+window.addEventListener('blur', () => {
+    if (hoveringMarker != null) { 
+        const markerElement = hoveringMarker.getElement()
+        markerElement.style.width = markerElement.style.height = `${currMarkerDiameter}px`
+        markerElement.style.zIndex = ''
+        hoveringMarker._popup.remove()
+        hoveringMarker = null
+    }
+})
+
+
 //search for place
-const geocoder = map.addControl(
-    new MapboxGeocoder({
+const geocoder = new MapboxGeocoder({
         accessToken: mapboxgl.accessToken,
-        mapboxgl: mapboxgl
+        mapboxgl: mapboxgl,
     })
-        .on('result', (res) => {
-            //enable spin only important for first instance if no geolocation found -- else this does nothing really
-            spinEnabled = false
-            exploringLoc = res.result.geometry.coordinates
-            clearExploringMarkers()
-            reverseGeoSearch(res.result.geometry.coordinates)
-        }),
-    'top-left'
-)
+
+map.addControl(geocoder, 'top-left')
+
+const searchInput = document.querySelector('.mapboxgl-ctrl-geocoder--input')
+searchInput.addEventListener('click', () => {
+    suggestions.classList.remove('hide')
+})
+
+geocoder.on('result', (res) => {
+    //enable spin only important for first instance if no geolocation found -- else this does nothing really
+    spinEnabled = false
+    exploringLoc = res.result.geometry.coordinates
+    clearExploringMarkers()
+    reverseGeoSearch(res.result.geometry.coordinates)
+})
 
 //use lng,lat to retrieve data from server of that area
 const makeMarker = async (ln, lt, rName, zip) => {
@@ -102,6 +122,7 @@ const manageMarkerEvents = (marker, business) => {
     let prevMarkerSize, markerPos, popUp
 
     markerElement.addEventListener('mouseover', () => {
+        hoveringMarker = marker
         prevMarkerSize = Number(markerElement.style.width.substring(0, markerElement.style.width.length - 2))    
         markerPos = markerElement.getBoundingClientRect()
 
@@ -128,6 +149,7 @@ const manageMarkerEvents = (marker, business) => {
         if (e.clientX < markerPos.x - 5 || e.clientX > markerPos.x + prevMarkerSize + 5 || e.clientY < markerPos.y - 5 || e.clientY > markerPos.y + prevMarkerSize + 5) {
             markerElement.style.width = markerElement.style.height = `${prevMarkerSize}px`
             markerElement.style.zIndex = ''
+            hoveringMarker = null
             popUp.remove()
         }
     })
@@ -240,18 +262,21 @@ const getSaved = async () => {
         .then(res => res.json())
         .then(data => {
             const areas = data.areas
+            const spots = null
+
+            loadSavedSide(areas, spots)
             areas.forEach(async (area) => {
                 //load saved area markers onto the map
                 const currentMarkers = await makeMarker(area.lng, area.lat, area.referredName, area.areaCode)
                 savedAreas[area.areaCode] = {
                     "refName": area.referredName,
+                    "displayName": area.displayName,
                     "markers": currentMarkers,
                     "location": [area.lng, area.lat]
                 }
             })
         })
 }
-
 
 
 //start map --> load saved locations --> getgeoloc

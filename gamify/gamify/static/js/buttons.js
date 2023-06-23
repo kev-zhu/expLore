@@ -84,12 +84,16 @@ saveLoc.addEventListener('click', () => {
         }),
         method: 'POST'
     })
+    .then(() => {
+        getSaved()
+    })
     favorited = true
     star.innerHTML = '&#9733'
     displayName = modalDisplay.value || modalRef.value
     viewingLoc.innerHTML = displayName
     savedAreas[exploringZip] = {
         "refName": referName,
+        "displayName": displayName,
         "markers": exploringMarkers,
         "location": exploringLoc
     }
@@ -105,6 +109,9 @@ const delArea = () => {
             zipCode: exploringZip
         }),
         method: 'POST'
+    })
+    .then(() => {
+        getSaved()
     })
 }
 

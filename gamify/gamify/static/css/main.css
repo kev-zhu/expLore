@@ -173,6 +173,7 @@ body {
     background-color: rgba(225,225,225,0.5);
 }
 
+/* do some calc here? make image more fitted */
 #marker-image {
     max-width: 250px;
     max-height: 200px;
@@ -182,4 +183,8 @@ body {
 
 .sidebar-marker > div {
     border-bottom: 1px solid lightgrey;
+}
+
+.suggestions-wrapper.hide {
+    display: none;
 }
