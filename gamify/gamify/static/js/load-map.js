@@ -58,8 +58,12 @@ const geocoder = new MapboxGeocoder({
 map.addControl(geocoder, 'top-left')
 
 const searchInput = document.querySelector('.mapboxgl-ctrl-geocoder--input')
-searchInput.addEventListener('click', () => {
-    suggestions.classList.remove('hide')
+const searchEvents = ['click', 'keypress']
+
+searchEvents.forEach(event => {
+    searchInput.addEventListener(event, () => {
+        suggestions.classList.remove('hide')
+    })
 })
 
 geocoder.on('result', (res) => {
@@ -74,7 +78,7 @@ geocoder.on('result', (res) => {
 const makeMarker = async (ln, lt, rName, zip) => {
     //change type= to read off window/selected buttons -- activity + food
     const currentMarkers = {}
-    await fetch(`/get-poi?lng=${ln}&lat=${lt}&area=${rName}&zip=${exploringZip || zip}&type=food+activity+bar`)
+    await fetch(`/get-poi?lng=${ln}&lat=${lt}&area=${rName}&zip=${zip || exploringZip}&type=food+activity+bar`)
         .then(res => res.json())
         .then(data => {
             data.businesses.forEach(business => {
@@ -97,10 +101,12 @@ const makeMarker = async (ln, lt, rName, zip) => {
 
                 const el = document.createElement('div')
                 el.className = 'marker'
-                el.style.backgroundImage = `url(${business.img_url})`
+                el.style.background = `linear-gradient(rgba(255,255,255,.7), rgba(255,255,255,.7)), url(${business.img_url})`
+                // el.style.backgroundImage = `url(${business.img_url})`
+                el.style.backgroundSize = 'cover'
+                el.style.backgroundRepeat = 'no-repeat'
                 el.style.width = `${markerStartDiameter}px`
                 el.style.height = `${markerStartDiameter}px`
-                el.style.backgroundSize = '100%'
                 el.style.border = `2px solid ${color}`
 
                 const marker = new mapboxgl.Marker(el)
@@ -160,7 +166,7 @@ const manageMarkerEvents = (marker, business) => {
 }
 
 const clearExploringMarkers = () => {
-    if (!favorited) {
+    if (!savedAreas.hasOwnProperty(exploringZip)) {
         Object.values(exploringMarkers).flat(1).forEach(marker => {
             marker.remove()
         })
@@ -204,20 +210,15 @@ const getGeoLoc = async () => {
         })
         currentLoc = [pos.coords.longitude, pos.coords.latitude]
 
-        //if there is a geolocation
-        //fly over there
-        map.flyTo({
-            center: currentLoc,
-            zoom: 13,
-            essential: true,
+        await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${pos.coords.longitude},${pos.coords.latitude}.json?access_token=${mapboxgl.accessToken}`)
+        .then(res => res.json())
+        .then(async (data) => {
+            const address = data.features.reduce((prevFeature, feature) => feature.place_type[0] === 'address' ? feature : null || prevFeature, null)
+            geocoder.query(address.place_name)
+            suggestions.classList.add('hide')            
         })
         spinEnabled = false
-
-        //pin current location
-        const marker1 = new mapboxgl.Marker({ color: 'red' })
-            .setLngLat(currentLoc)
-            .addTo(map);
-
+        
         //call stuff to add pinned locations
         exploringLoc = currentLoc
         reverseGeoSearch(currentLoc)
@@ -262,7 +263,7 @@ const getSaved = async () => {
         .then(res => res.json())
         .then(data => {
             const areas = data.areas
-            const spots = null
+            const spots = data.spots
 
             loadSavedSide(areas, spots)
             areas.forEach(async (area) => {

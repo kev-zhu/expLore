@@ -35,3 +35,25 @@ class Area(models.Model):
     
     def __str__(self):
         return f'{self.user.username}: {self.displayName}'
+
+
+
+class Spot(models.Model):
+    user = models.ForeignKey(to=User, on_delete=models.CASCADE, null=False)
+    business = models.ForeignKey(to=Business, on_delete=models.CASCADE, default=None, null=False, blank=False)
+    displayName = models.CharField()
+    areaOrigin = models.CharField(default=None, null=False, blank=False)
+    lat = models.FloatField(default=None, null=False, blank=False)
+    lng = models.FloatField(default=None, null=False, blank=False)
+    address = models.CharField(default=None, null=False, blank=False)
+
+    def __str__(self):
+        return f'{self.user.username}: {self.displayName}'
+
+
+class Visit(models.Model):
+    user = models.ForeignKey(to=User, on_delete=models.CASCADE, default=None, null=False, blank=False)
+    business = models.ForeignKey(to=Business, on_delete=models.CASCADE, default=None, null=False, blank=False)
+
+    def __str__(self):
+        return f'{self.user.username}: {self.business.displayName}'

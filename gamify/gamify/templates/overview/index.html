@@ -15,9 +15,10 @@
 {% endblock %}
 
 {% block content %}
+<div id="map"></div>
+
 {% include 'components/sideBar.html' %}
 {% include 'components/onMapButtons.html' %}
-<div id="map"></div>
 
 <script src="{% static 'js/load-map.js' %}"></script>
 

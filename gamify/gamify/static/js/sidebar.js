@@ -1,11 +1,16 @@
-let suggestions
-
 const sideBar = document.querySelector('.sidebar')
 const sideBarBtn = document.querySelector('.sidebar-btn')
 const xSideBar = document.querySelector('.xSidebar')
 const sideContent = document.querySelector('.sidebar-content')
-const sideSaved = document.querySelector('.savedAreas')
+const sideSavedAreas = document.querySelector('.savedAreas')
+const sideSavedSpots = document.querySelector('.savedSpots')
+
+const spotStar = document.querySelector('#spotStar')
+const saveSpot = document.querySelector('.save-spot')
+
+let suggestions, sideViewBusiness
 let sidePrevOpen = false
+let spotSaved = false
 
 
 const sideOpen = () => {
@@ -42,9 +47,22 @@ sideBarBtn.addEventListener("click", () => {
     }
 })
 
-const addMarkerToSide = (business) => {
+
+const addMarkerToSide = async (business) => {
     sideOpen()
     sideContent.classList.add('active')
+    sideViewBusiness = business
+
+    await fetch(`get-savedSpot/${business.address}`)
+    .then(res => res.json())
+    .then(data => {
+        spotSaved = data.saved
+        if (data.saved) {
+            spotStar.innerHTML = '&#9733'
+        } else {
+            spotStar.innerHTML = '&#9734'
+        }
+    })
 
     const markerSide = document.querySelector('.sidebar-marker')
     //do something here to scale and center image before rendering on sidemarker
@@ -60,8 +78,12 @@ const addMarkerToSide = (business) => {
 const loadSavedSide = (areas, spots) => {
     suggestions = document.querySelector('.suggestions-wrapper')
     //clear all saved first
-    while (sideSaved.firstChild) {
-        sideSaved.removeChild(sideSaved.firstChild)
+    while (sideSavedAreas.firstChild) {
+        sideSavedAreas.removeChild(sideSavedAreas.firstChild)
+    }
+
+    while (sideSavedSpots.firstChild) {
+        sideSavedSpots.removeChild(sideSavedSpots.firstChild)
     }
 
     //then load saved from call -- get most up to date of user's all saved
@@ -70,22 +92,17 @@ const loadSavedSide = (areas, spots) => {
         sidebarArea.className = 'savedArea'
         sidebarArea.setAttribute('data-zip', area.areaCode)
         sidebarArea.innerHTML = area.displayName
-        sideSaved.append(sidebarArea)
+        sideSavedAreas.append(sidebarArea)
 
         //even though savedAreas not accessible on "load" instantaneously, this is an eventlistener for later use
         sidebarArea.addEventListener('click', () => {
             clearExploringMarkers()
             let goToLocation = savedAreas[area.areaCode]
 
+            geocoder.setFlyTo(true)
             geocoder.query(goToLocation.refName)
 
-
             suggestions.classList.add('hide')
-            // map.flyTo({
-            //     center: goToLocation.location,
-            //     zoom: 12,
-            //     essential: true
-            // })
 
             spinEnabled = false
             exploringZip = area.areaCode
@@ -96,4 +113,61 @@ const loadSavedSide = (areas, spots) => {
         })
     })
 
+    spots.forEach(spot => {
+        const sidebarSpot = document.createElement('div')
+        sidebarSpot.className = 'savedSpot'
+        sidebarSpot.innerHTML = spot.displayName
+        sideSavedSpots.append(sidebarSpot)
+
+        sidebarSpot.addEventListener('click', () => {
+            addMarkerToSide(spot.business)
+
+            geocoder.setFlyTo(false)
+            geocoder.query(spot.areaOrigin)
+            map.flyTo({
+                center: [spot.lng, spot.lat],
+                zoom: 14,
+                essential: true
+            })
+
+            suggestions.classList.add('hide')
+            spinEnabled = false
+            
+        })
+    })
 }
+
+saveSpot.addEventListener('click', () => {
+    if (spotSaved) {
+        //unsave Spot
+        fetch('del-spot', {
+            body: JSON.stringify({
+                address: sideViewBusiness.address
+            }),
+            method: 'POST'
+        })
+        .then(() => {
+            spotStar.innerHTML = '&#9734'
+            spotSaved = false
+            getSaved()
+        })
+    } else {
+        //save Spot
+        fetch('save-spot', {
+            body: JSON.stringify({
+                display: sideViewBusiness.name,
+                lat: sideViewBusiness.lat,
+                lng: sideViewBusiness.lng,
+                address: sideViewBusiness.address,
+                //potential bug here where areaOrigin can be different depending how the clicks are set up
+                areaOrigin: referName || sideViewBusiness.area
+            }),
+            method: 'POST'
+        })
+        .then(() => {
+            spotStar.innerHTML = '&#9733'
+            spotSaved = true
+            getSaved()
+        })
+    }
+})

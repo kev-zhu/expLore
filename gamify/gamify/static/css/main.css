@@ -73,7 +73,7 @@ body {
     max-width: 200px;
 }
 
-#star {
+#star, #spotStar{
     color: orange;
 }
 
@@ -163,13 +163,13 @@ body {
     
 }
 
-.savedArea {
+.savedArea, .savedSpot {
     white-space: nowrap;
     overflow-x: clip;
     padding: 5px;   
 }
 
-.savedArea:hover {
+.savedArea:hover, .savedSpot:hover {
     background-color: rgba(225,225,225,0.5);
 }
 

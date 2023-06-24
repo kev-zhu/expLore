@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 
 import os
 import requests
-from .models import Business, Area
+from .models import Business, Area, Spot, Visit
 from django.forms.models import model_to_dict
 from django.http import JsonResponse
 import json
@@ -12,15 +12,7 @@ import json
 
 @login_required(login_url='/authentication/login')
 def index(request):
-    all_area = Area.objects.filter(user=request.user).order_by('displayName')
-    areas = list(map(model_to_dict, all_area))
-    spots = ''
-
-    context = {
-        'areas': areas
-    }
-
-    return render(request, 'overview/index.html', context)
+    return render(request, 'overview/index.html')
 
 #something to ensure get requests
 
@@ -101,12 +93,47 @@ def get_savedArea(request, area, zip):
 
 @login_required
 def del_area(request):
-    data = json.loads(request.body)
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        try:
+            Area.objects.get(user=request.user, referredName=data['refName'], areaCode=data['zipCode']).delete()
+            return JsonResponse({'success': 'Area has been deleted from DB'})
+        except:
+            return JsonResponse({'error': 'Area not in DB'})
+    return JsonResponse({'error': 'Request must be post'})
+
+
+
+@login_required
+def save_spot(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        if (Spot.objects.filter(user=request.user, displayName=data['display']).count() == 0):
+            businessTarget = Business.objects.get(address=data['address'])
+            Spot.objects.create(user=request.user, displayName=data['display'], lat=data['lat'], lng=data['lng'], address=data['address'], areaOrigin=data['areaOrigin'], business=businessTarget)
+        return JsonResponse({'success': 'Spot has been added to DB'})
+    return JsonResponse({'error': 'Request must be post'})
+
+
+@login_required
+def get_savedSpot(request, address):
     try:
-        Area.objects.get(user=request.user, referredName=data['refName'], areaCode=data['zipCode']).delete()
-        return JsonResponse({'success': 'Area has been deleted from DB'})
+        savedSpot = Spot.objects.get(user=request.user, address=address)
+        return JsonResponse({'saved': True})
     except:
-        return JsonResponse({'error': 'Area not in DB'})
+        return JsonResponse({'saved': False})
+
+
+@login_required
+def del_spot(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        try:
+            Spot.objects.get(user=request.user, address=data['address']).delete()
+            return JsonResponse({'success': 'Spot has been removed from DB'})
+        except:
+            return JsonResponse({'error': 'Spot not in DB'})
+    return JsonResponse({'error': 'Request must be post'})
 
 
 #include spots later on
@@ -115,5 +142,13 @@ def get_all_saved(request):
     all_area = Area.objects.filter(user=request.user)
     areas = sorted(list(map(model_to_dict, all_area)), key=lambda x: x['displayName'])
 
-    spots = ''
-    return JsonResponse({'areas': areas, 'spots': ''})
+    all_spots = Spot.objects.filter(user=request.user)
+    list_spots = (list(map(model_to_dict, all_spots)))
+
+    for s in range(len(list_spots)):
+        targetBusiness = Business.objects.get(pk=list_spots[s]['business'])
+        list_spots[s]['business'] = model_to_dict(targetBusiness)
+
+    spots = sorted(list_spots, key=lambda x: x['displayName'])
+    
+    return JsonResponse({'areas': areas, 'spots': spots})
