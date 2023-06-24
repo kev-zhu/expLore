@@ -15,13 +15,11 @@ let spotSaved = false
 
 const sideOpen = () => {
     sideBar.classList.add('active')
-    sideBarBtn.innerHTML = '&lt;'
     sideBarBtn.classList.add('active')
 }
 
 const sideClose = () => {
     sideBar.classList.remove('active')
-    sideBarBtn.innerHTML = '&gt;'
     sideBarBtn.classList.remove('active')
 }
 
@@ -124,6 +122,7 @@ const loadSavedSide = (areas, spots) => {
 
             geocoder.setFlyTo(false)
             geocoder.query(spot.areaOrigin)
+
             map.flyTo({
                 center: [spot.lng, spot.lat],
                 zoom: 14,
@@ -159,8 +158,6 @@ saveSpot.addEventListener('click', () => {
                 lat: sideViewBusiness.lat,
                 lng: sideViewBusiness.lng,
                 address: sideViewBusiness.address,
-                //potential bug here where areaOrigin can be different depending how the clicks are set up
-                areaOrigin: referName || sideViewBusiness.area
             }),
             method: 'POST'
         })

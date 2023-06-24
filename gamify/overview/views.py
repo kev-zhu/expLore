@@ -110,7 +110,7 @@ def save_spot(request):
         data = json.loads(request.body)
         if (Spot.objects.filter(user=request.user, displayName=data['display']).count() == 0):
             businessTarget = Business.objects.get(address=data['address'])
-            Spot.objects.create(user=request.user, displayName=data['display'], lat=data['lat'], lng=data['lng'], address=data['address'], areaOrigin=data['areaOrigin'], business=businessTarget)
+            Spot.objects.create(user=request.user, displayName=data['display'], lat=data['lat'], lng=data['lng'], address=data['address'], areaOrigin=businessTarget.area, business=businessTarget)
         return JsonResponse({'success': 'Spot has been added to DB'})
     return JsonResponse({'error': 'Request must be post'})
 

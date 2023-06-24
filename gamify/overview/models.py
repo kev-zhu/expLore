@@ -23,6 +23,9 @@ class Business(models.Model):
     def __str__(self):
         return f'{self.zipSearch}: {self.type}: {self.area} - {self.name}'
 
+    class Meta:
+        ordering = ["zipSearch"]
+
         
 
 class Area(models.Model):

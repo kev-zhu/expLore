@@ -134,6 +134,7 @@ body {
 
 .sidebar-btn {
     position: absolute;
+    display: block;
     z-index: 2;
     top: 50vh;
     left: 0px;
@@ -144,6 +145,7 @@ body {
 }
 
 .sidebar-btn.active {
+    display: none;
     left: 250px;
 }
 

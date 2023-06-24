@@ -131,17 +131,20 @@ const filterTypes = [
     {
         'btnElement': barButton,
         'type': 'bar',
-        'color': 'rgb(252, 185, 185)'
+        'color': 'rgb(252, 185, 185)',
+        'defaultOn': false
     },
     {
         'btnElement': foodButton,
         'type': 'food',
-        'color': 'rgb(168, 224, 150)'
+        'color': 'rgb(168, 224, 150)',
+        'defaultOn': true
     },
     {
         'btnElement': activityButton,
         'type': 'activity',
-        'color': 'rgb(130, 199, 252)'
+        'color': 'rgb(130, 199, 252)',
+        'defaultOn': true
     }
 ]
 
@@ -186,3 +189,13 @@ const toggleFilterButtons = (type, active) => {
         }
     }
 }
+
+const setDefaultFilters = () => {
+    filterTypes.forEach((generic) => {
+        if (generic.defaultOn) {
+            generic.btnElement.style.backgroundColor = generic.color
+            activeFilters.push(generic.type)
+            toggleFilterButtons(generic.type, true)
+        }
+    })
+}    

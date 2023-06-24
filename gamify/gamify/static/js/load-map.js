@@ -63,6 +63,7 @@ const searchEvents = ['click', 'keypress']
 searchEvents.forEach(event => {
     searchInput.addEventListener(event, () => {
         suggestions.classList.remove('hide')
+        geocoder.setFlyTo(true)
     })
 })
 
@@ -261,13 +262,13 @@ const startMapApp = () => {
 const getSaved = async () => {
     await fetch('/get-all-saved')
         .then(res => res.json())
-        .then(data => {
+        .then(async data => {
             const areas = data.areas
             const spots = data.spots
 
             loadSavedSide(areas, spots)
-            areas.forEach(async (area) => {
-                //load saved area markers onto the map
+
+            for (const area of areas) {
                 const currentMarkers = await makeMarker(area.lng, area.lat, area.referredName, area.areaCode)
                 savedAreas[area.areaCode] = {
                     "refName": area.referredName,
@@ -275,7 +276,7 @@ const getSaved = async () => {
                     "markers": currentMarkers,
                     "location": [area.lng, area.lat]
                 }
-            })
+            }            
         })
 }
 
@@ -285,6 +286,8 @@ const run = async () => {
     startMapApp()
     await getSaved()
     await getGeoLoc()
+    setDefaultFilters()
+    
     //add a feature that lists the saved locations on side menu and feature to "quick hop" to that place
     //like a list -- and indented are saved restraunt/activites that person can quick hop to specifically
     //render all other saved locations -- "places wanted to travel"
