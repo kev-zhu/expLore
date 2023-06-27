@@ -1,11 +1,14 @@
 //change so accessToken is hidden from client-end?
 mapboxgl.accessToken = 'pk.eyJ1Ijoia2V2aW56aHUzNSIsImEiOiJjbGlqZDlucXYwNjZuM3Fxdmd6eTNhMDlrIn0.ULZWndcTJElOGpeFuBAXEw';
 
+const unvisitedMarkerStr = 'linear-gradient(rgba(255,255,255,.7), rgba(255,255,255,.7)), '
 const markerStartDiameter = 40
 let currMarkerDiameter = markerStartDiameter
-let currentLoc, exploringZip, exploringLoc, hoveringMarker
+let currentLoc, exploringZip, exploringLoc, hoveringMarker, selectedMarker
 let spinEnabled = true
 let savedAreas = {}
+let savedSpots = {}
+let visitedSpots = {}
 let exploringMarkers = {}
 let activeFilters = []
 
@@ -76,45 +79,23 @@ geocoder.on('result', (res) => {
 })
 
 //use lng,lat to retrieve data from server of that area
-const makeMarker = async (ln, lt, rName, zip) => {
+const makeMarkerArea = async (ln, lt, rName, zip) => {
     //change type= to read off window/selected buttons -- activity + food
     const currentMarkers = {}
     await fetch(`/get-poi?lng=${ln}&lat=${lt}&area=${rName}&zip=${zip || exploringZip}&type=food+activity+bar`)
         .then(res => res.json())
-        .then(data => {
+        .then((data) => {
             data.businesses.forEach(business => {
+                let marker = {}
                 if (!(business.type in currentMarkers)) {
                     currentMarkers[business.type] = []
                 }
                 
-                let color = null
-                if (business.type === 'food') {
-                    color = 'green'
-                } else if (business.type === 'bar') {
-                    color = 'red'
-                } else if (business.type === 'activity') {
-                    color = 'blue'
+                if (visitedSpots.hasOwnProperty(business.id)) {
+                    marker[business.id] = visitedSpots[business.id]['marker']
+                } else {
+                    marker[business.id] = makeMarker(business, false)
                 }
-
-                const popup = new mapboxgl.Popup({ offset: 100 }).setText(
-                    business.name
-                )
-
-                const el = document.createElement('div')
-                el.className = 'marker'
-                el.style.background = `linear-gradient(rgba(255,255,255,.7), rgba(255,255,255,.7)), url(${business.img_url})`
-                // el.style.backgroundImage = `url(${business.img_url})`
-                el.style.backgroundSize = 'cover'
-                el.style.backgroundRepeat = 'no-repeat'
-                el.style.width = `${markerStartDiameter}px`
-                el.style.height = `${markerStartDiameter}px`
-                el.style.border = `2px solid ${color}`
-
-                const marker = new mapboxgl.Marker(el)
-                    .setLngLat([business.lng, business.lat])
-
-                manageMarkerEvents(marker, business)
-
                 currentMarkers[business.type].push(marker)
             })
         }
@@ -122,6 +103,34 @@ const makeMarker = async (ln, lt, rName, zip) => {
     return currentMarkers
 }
 
+const makeMarker = (business, explored) => {
+    let color = null
+    if (business.type === 'food') {
+        color = 'green'
+    } else if (business.type === 'bar') {
+        color = 'red'
+    } else if (business.type === 'activity') {
+        color = 'blue'
+    }
+
+    const el = document.createElement('div')
+    el.className = 'marker'
+    el.style.background = `url(${business.img_url})`
+    if (!explored) {
+        el.style.background = unvisitedMarkerStr + el.style.background
+    }
+    el.style.backgroundSize = 'cover'
+    el.style.backgroundRepeat = 'no-repeat'
+    el.style.width = `${markerStartDiameter}px`
+    el.style.height = `${markerStartDiameter}px`
+    el.style.border = `2px solid ${color}`
+
+    const marker = new mapboxgl.Marker(el)
+        .setLngLat([business.lng, business.lat])
+
+    manageMarkerEvents(marker, business)
+    return marker
+}
 
 //problem with moving mouse btw markers too fast -- something gets "stuck"
 const manageMarkerEvents = (marker, business) => {
@@ -163,13 +172,19 @@ const manageMarkerEvents = (marker, business) => {
 
     markerElement.addEventListener('click', () => {
         addMarkerToSide(business)
+        selectedMarker = marker
     })
 }
 
 const clearExploringMarkers = () => {
     if (!savedAreas.hasOwnProperty(exploringZip)) {
         Object.values(exploringMarkers).flat(1).forEach(marker => {
-            marker.remove()
+            markerKey = Object.keys(marker)[0]
+            markerValue = Object.values(marker)[0]
+
+            if (!visitedSpots.hasOwnProperty(markerKey)) {
+                markerValue.remove()
+            }
         })
     }
 }
@@ -192,8 +207,7 @@ const reverseGeoSearch = async ([lng, lat]) => {
                 if (alreadyOnSavedList) {
                     exploringMarkers = savedAreas[exploringZip].markers
                 } else {    
-                    //makeMarker get and save area based on area referred name, not display name
-                    exploringMarkers = await makeMarker(lng, lat, area, exploringZip)
+                    exploringMarkers = await makeMarkerArea(lng, lat, area, exploringZip)
                     activeFilters.forEach(filter => {
                         toggleFilterButtons(filter, true)
                     })
@@ -259,6 +273,22 @@ const startMapApp = () => {
 }
 
 
+const getVisited = async () => {
+    await fetch('get-all-visit')
+    .then(res => res.json())
+    .then(data => {
+        const visitedBusinesses = data.businesses
+        //business ID, marker OBJ
+        for (const business of visitedBusinesses) {
+            visitedSpots[business.id] = {
+                "type": business.type,
+                "marker": makeMarker(business, true),
+            } 
+        }
+    })
+}
+
+
 const getSaved = async () => {
     await fetch('/get-all-saved')
         .then(res => res.json())
@@ -269,7 +299,7 @@ const getSaved = async () => {
             loadSavedSide(areas, spots)
 
             for (const area of areas) {
-                const currentMarkers = await makeMarker(area.lng, area.lat, area.referredName, area.areaCode)
+                const currentMarkers = await makeMarkerArea(area.lng, area.lat, area.referredName, area.areaCode)
                 savedAreas[area.areaCode] = {
                     "refName": area.referredName,
                     "displayName": area.displayName,
@@ -284,13 +314,10 @@ const getSaved = async () => {
 //start map --> load saved locations --> getgeoloc
 const run = async () => {
     startMapApp()
+    await getVisited()
     await getSaved()
     await getGeoLoc()
     setDefaultFilters()
-    
-    //add a feature that lists the saved locations on side menu and feature to "quick hop" to that place
-    //like a list -- and indented are saved restraunt/activites that person can quick hop to specifically
-    //render all other saved locations -- "places wanted to travel"
 }
 
 run()

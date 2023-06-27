@@ -11,5 +11,9 @@ urlpatterns = [
     path('save-spot', csrf_exempt(views.save_spot), name='save-spot'),
     path('get-savedSpot/<str:address>', views.get_savedSpot, name='get-spot'),
     path('del-spot', csrf_exempt(views.del_spot), name='del-spot'),
-    path('get-all-saved', csrf_exempt(views.get_all_saved), name='get-all-saved'),
+    path('get-all-saved', views.get_all_saved, name='get-all-saved'),
+    path('get-business-visit/<int:id>', views.get_business_visit, name='get-business-visit'),
+    path('save-visit', csrf_exempt(views.save_visit), name='save-visit'),
+    path('del-visit', csrf_exempt(views.del_visit), name='del-visit'),
+    path('get-all-visit', csrf_exempt(views.get_all_visit), name='get-all-visit'),
 ]

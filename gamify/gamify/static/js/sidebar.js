@@ -5,12 +5,15 @@ const sideContent = document.querySelector('.sidebar-content')
 const sideSavedAreas = document.querySelector('.savedAreas')
 const sideSavedSpots = document.querySelector('.savedSpots')
 
-const spotStar = document.querySelector('#spotStar')
 const saveSpot = document.querySelector('.save-spot')
+const spotStar = document.querySelector('#spotStar')
+const visitSpot = document.querySelector('.visit-Spot')
+const visitSymbol = document.querySelector('.spotVisit')
 
 let suggestions, sideViewBusiness
 let sidePrevOpen = false
 let spotSaved = false
+let visited = false
 
 
 const sideOpen = () => {
@@ -45,7 +48,6 @@ sideBarBtn.addEventListener("click", () => {
     }
 })
 
-
 const addMarkerToSide = async (business) => {
     sideOpen()
     sideContent.classList.add('active')
@@ -62,6 +64,17 @@ const addMarkerToSide = async (business) => {
         }
     })
 
+    await fetch(`get-business-visit/${business.id}`)
+    .then(res => res.json())
+    .then(data => {
+        visited = data.visited
+        if (data.visited) {
+            visitSymbol.innerHTML = '&#9989'
+        } else {
+            visitSymbol.innerHTML = '&#10060'
+        }
+    })
+
     const markerSide = document.querySelector('.sidebar-marker')
     //do something here to scale and center image before rendering on sidemarker
     markerSide.querySelector('#marker-image').src = business.img_url
@@ -73,8 +86,12 @@ const addMarkerToSide = async (business) => {
     markerSide.querySelector('#marker-yelp').href = business.yelpLink
 }
 
+
 const loadSavedSide = (areas, spots) => {
     suggestions = document.querySelector('.suggestions-wrapper')
+    document.querySelector('.areaCount').innerHTML = `${areas.length}`
+    document.querySelector('.spotCount').innerHTML = `${spots.length}`
+
     //clear all saved first
     while (sideSavedAreas.firstChild) {
         sideSavedAreas.removeChild(sideSavedAreas.firstChild)
@@ -119,9 +136,10 @@ const loadSavedSide = (areas, spots) => {
 
         sidebarSpot.addEventListener('click', () => {
             addMarkerToSide(spot.business)
+            // selectedMarker = marker from savedSpot
 
             geocoder.setFlyTo(false)
-            geocoder.query(spot.areaOrigin)
+            geocoder.query(spot.address)
 
             map.flyTo({
                 center: [spot.lng, spot.lat],
@@ -168,3 +186,53 @@ saveSpot.addEventListener('click', () => {
         })
     }
 })
+
+
+visitSpot.addEventListener('click', () => {
+    if (visited) {
+        visited = false
+        visitSymbol.innerHTML = '&#10060'
+        //delete visit
+        fetch('del-visit', {
+            body: JSON.stringify({
+                id: sideViewBusiness.id
+            }),
+            method: 'POST'
+        })
+        .then(() => {
+            visitFalse()
+        })
+    } else {
+        visited = true
+        visitSymbol.innerHTML = '&#9989'
+        //save visit
+        fetch('save-visit', {
+            body: JSON.stringify({
+                id: sideViewBusiness.id
+            }),
+            method: 'POST'
+        })
+        .then(() => {
+            visitTrue()
+        })
+    }
+}) 
+
+
+const visitTrue = () => {
+    //markerVisual
+    markerElement = selectedMarker.getElement()
+    markerElement.style.background = `url(${sideViewBusiness.img_url})`
+    markerElement.style.backgroundSize = 'cover'
+    visitedSpots[sideViewBusiness.id] = {
+        "type": sideViewBusiness.type,
+        "marker": selectedMarker
+    }
+}
+
+const visitFalse = () => {
+    markerElement = selectedMarker.getElement()
+    markerElement.style.background = unvisitedMarkerStr + `url(${sideViewBusiness.img_url})`
+    markerElement.style.backgroundSize = 'cover'
+    delete visitedSpots[sideViewBusiness.id]
+}

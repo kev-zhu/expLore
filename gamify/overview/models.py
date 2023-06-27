@@ -59,4 +59,4 @@ class Visit(models.Model):
     business = models.ForeignKey(to=Business, on_delete=models.CASCADE, default=None, null=False, blank=False)
 
     def __str__(self):
-        return f'{self.user.username}: {self.business.displayName}'
+        return f'{self.user.username}: {self.business.name}'

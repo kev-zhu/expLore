@@ -55,21 +55,22 @@ def get_yelp_top_10(lat, lng, type, area, zip):
     businesses = r.json()['businesses']
 
     for business in businesses:
-        Business.objects.create(
-            type = type,
-            area = area,
-            zipSearch = zip,
+        if (Business.objects.filter(lat=business['coordinates']['latitude'], lng=business['coordinates']['longitude']).count() == 0):
+            Business.objects.create(
+                type = type,
+                area = area,
+                zipSearch = zip,
 
-            lat = business['coordinates']['latitude'],
-            lng = business['coordinates']['longitude'],
-            phone = business['display_phone'],
-            img_url = business['image_url'],
-            address = f"{', '.join(business['location']['display_address'])}",
-            name = business['name'],
-            rating = business['rating'],
-            reviewCount = business['review_count'],
-            yelpLink = business['url']
-        )
+                lat = business['coordinates']['latitude'],
+                lng = business['coordinates']['longitude'],
+                phone = business['display_phone'],
+                img_url = business['image_url'],
+                address = f"{', '.join(business['location']['display_address'])}",
+                name = business['name'],
+                rating = business['rating'],
+                reviewCount = business['review_count'],
+                yelpLink = business['url']
+            )
 
 
 @login_required
@@ -109,6 +110,7 @@ def save_spot(request):
     if request.method == "POST":
         data = json.loads(request.body)
         if (Spot.objects.filter(user=request.user, displayName=data['display']).count() == 0):
+            print(Business.objects.filter(address=data['address']))
             businessTarget = Business.objects.get(address=data['address'])
             Spot.objects.create(user=request.user, displayName=data['display'], lat=data['lat'], lng=data['lng'], address=data['address'], areaOrigin=businessTarget.area, business=businessTarget)
         return JsonResponse({'success': 'Spot has been added to DB'})
@@ -136,7 +138,6 @@ def del_spot(request):
     return JsonResponse({'error': 'Request must be post'})
 
 
-#include spots later on
 @login_required
 def get_all_saved(request):
     all_area = Area.objects.filter(user=request.user)
@@ -152,3 +153,49 @@ def get_all_saved(request):
     spots = sorted(list_spots, key=lambda x: x['displayName'])
     
     return JsonResponse({'areas': areas, 'spots': spots})
+
+
+@login_required
+def get_business_visit(request, id):
+    try: 
+        businessTarget = Business.objects.get(id=id)
+        Visit.objects.get(user=request.user, business=businessTarget)
+    except:
+        return JsonResponse({"visited": False})    
+    return JsonResponse({"visited": True})
+
+
+@login_required
+def save_visit(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        try:
+            business = Business.objects.get(pk=data['id'])
+            Visit.objects.create(user=request.user, business=business)
+        except:
+            return JsonResponse({'Error': 'Failed to add visit to DB'})
+
+    return JsonResponse({'Success': 'Business visit added'})
+
+
+@login_required
+def del_visit(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        try:
+            business = Business.objects.get(pk=data['id'])
+            Visit.objects.get(user=request.user, business=business).delete()
+        except:
+            return JsonResponse({'Error', 'Failed to remove visit from DB'})
+
+    return JsonResponse({'Success': 'Business visit removed'})
+
+
+#instead have this send list of business objects over
+@login_required
+def get_all_visit(request):
+    # visitedBusinessId = [visit.business.id for visit in Visit.objects.all()]
+    allVisitBusiness = [visit.business for visit in Visit.objects.all()]
+    visitedBusiness = list(map(model_to_dict, allVisitBusiness))
+
+    return JsonResponse({'businesses': visitedBusiness})

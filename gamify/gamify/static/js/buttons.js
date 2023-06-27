@@ -166,26 +166,67 @@ filterTypes.forEach(generic => {
 const toggleFilterButtons = (type, active) => {
     //toggle saved areas
     if (active) {
-        Object.keys(savedAreas).forEach(area => {
-            savedAreas[area]['markers'][type].forEach(marker => {
-                marker.addTo(map)
+        try {
+            Object.values(visitedSpots).forEach(spot => {
+                if (spot['type'] === type) {
+                    spot['marker'].addTo(map)
+                }
             })
-        })
-        if (Object.keys(exploringMarkers).length !== 0) {
-            exploringMarkers[type].forEach(marker => {
-                marker.addTo(map)
+            
+            Object.keys(savedAreas).forEach(area => {
+                savedAreas[area]['markers'][type].forEach(marker => {
+                    markerKey = Object.keys(marker)[0]
+                    markerValue = Object.values(marker)[0]
+                    // console.log(visitedSpots.hasOwnProperty(Object.keys(marker)[0]))
+                    if (!visitedSpots.hasOwnProperty(markerKey)) {
+                        markerValue.addTo(map)
+                    }
+                })
             })
+
+            if (Object.keys(exploringMarkers).length !== 0) {
+                exploringMarkers[type].forEach(marker => {
+                    markerKey = Object.keys(marker)[0]
+                    markerValue = Object.values(marker)[0]
+                    // console.log(visitedSpots.hasOwnProperty(Object.keys(marker)[0]))
+                    if (!visitedSpots.hasOwnProperty(markerKey)) {
+                        markerValue.addTo(map)
+                    }
+                })
+            }
+        } catch {
+            console.log(`This location currently has no ${type} saved`)
         }
     } else {
-        Object.keys(savedAreas).forEach(area => {
-            savedAreas[area]['markers'][type].forEach(marker => {
-                marker.remove()
+        try {
+            Object.values(visitedSpots).forEach(spot => {
+                if (spot['type'] === type) {
+                    spot['marker'].remove(map)
+                }
             })
-        })
-        if (Object.keys(exploringMarkers).length !== 0) {
-            exploringMarkers[type].forEach(marker => {
-                marker.remove(map)
+
+            Object.keys(savedAreas).forEach(area => {
+                savedAreas[area]['markers'][type].forEach(marker => {
+                    markerKey = Object.keys(marker)[0]
+                    markerValue = Object.values(marker)[0]
+                    // console.log(visitedSpots.hasOwnProperty(Object.keys(marker)[0]))
+                    if (!visitedSpots.hasOwnProperty(markerKey)) {
+                        markerValue.remove(map)
+                    }
+                })
             })
+            if (Object.keys(exploringMarkers).length !== 0) {
+                exploringMarkers[type].forEach(marker => {
+                    markerKey = Object.keys(marker)[0]
+                    markerValue = Object.values(marker)[0]
+                    // console.log(visitedSpots.hasOwnProperty(Object.keys(marker)[0]))
+                    if (!visitedSpots.hasOwnProperty(markerKey)) {
+                        markerValue.remove(map)
+                    }
+                })
+            }
+        } catch {
+            console.log(`This location currently has no ${type} saved`)
         }
     }
 }
