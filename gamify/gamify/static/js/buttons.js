@@ -172,6 +172,12 @@ const toggleFilterButtons = (type, active) => {
                     spot['marker'].addTo(map)
                 }
             })
+
+            Object.values(savedSpots).forEach(spot => {
+                if (spot['type'] === type) {
+                    spot['marker'].addTo(map)
+                }
+            })
             
             Object.keys(savedAreas).forEach(area => {
                 savedAreas[area]['markers'][type].forEach(marker => {
@@ -200,6 +206,12 @@ const toggleFilterButtons = (type, active) => {
     } else {
         try {
             Object.values(visitedSpots).forEach(spot => {
+                if (spot['type'] === type) {
+                    spot['marker'].remove(map)
+                }
+            })
+
+            Object.values(savedSpots).forEach(spot => {
                 if (spot['type'] === type) {
                     spot['marker'].remove(map)
                 }

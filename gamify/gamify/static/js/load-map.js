@@ -11,6 +11,8 @@ let savedSpots = {}
 let visitedSpots = {}
 let exploringMarkers = {}
 let activeFilters = []
+let removeSpots = {}
+let removeVisits = {}
 
 //separate function? --> let map = null + function to call at the beginning renderStartMap()?
 let map = new mapboxgl.Map({
@@ -93,6 +95,8 @@ const makeMarkerArea = async (ln, lt, rName, zip) => {
                 
                 if (visitedSpots.hasOwnProperty(business.id)) {
                     marker[business.id] = visitedSpots[business.id]['marker']
+                } else if (savedSpots.hasOwnProperty(business.id)) {
+                    marker[business.id] = savedSpots[business.id]['marker']
                 } else {
                     marker[business.id] = makeMarker(business, false)
                 }
@@ -177,15 +181,47 @@ const manageMarkerEvents = (marker, business) => {
 }
 
 const clearExploringMarkers = () => {
+    //clear unsaved Area
     if (!savedAreas.hasOwnProperty(exploringZip)) {
         Object.values(exploringMarkers).flat(1).forEach(marker => {
             markerKey = Object.keys(marker)[0]
             markerValue = Object.values(marker)[0]
 
+            //****also check if in spots/visited first
             if (!visitedSpots.hasOwnProperty(markerKey)) {
                 markerValue.remove()
             }
         })
+    }
+
+    //clear unsaved Spots
+    Object.keys(removeSpots).forEach(spotId => {
+        const inVisits = visitedSpots.hasOwnProperty(spotId)
+        const inSavedAreas = checkInSavedArea(spotId, removeSpots[spotId]['type'], removeSpots[spotId]['zipSearch'])
+
+        if (!(inVisits || inSavedAreas)) {
+            removeSpots[spotId]['marker'].remove()
+            delete removeSpots[spotId]
+        }
+    })
+
+    //clear unvisited Spots
+    Object.keys(removeVisits).forEach(spotId => {
+        const inSavedSpots = savedSpots.hasOwnProperty(spotId)
+        const inSavedAreas = checkInSavedArea(spotId, removeVisits[spotId].type, removeVisits[spotId].zipSearch)
+
+        if (!(inSavedSpots || inSavedAreas)) {
+            removeVisits[spotId]['marker'].remove()
+            delete removeVisits[spotId]
+        }
+    })}
+
+const checkInSavedArea = (id, type, zipSearch) => {
+    try {
+        const selectedMarkers = savedAreas[zipSearch]['markers'][type]
+        return selectedMarkers.reduce((status, currMarker) => status || Object.keys(currMarker)[0] === String(id), false)
+    } catch {
+        return false
     }
 }
 

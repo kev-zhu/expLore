@@ -52,6 +52,7 @@ const addMarkerToSide = async (business) => {
     sideOpen()
     sideContent.classList.add('active')
     sideViewBusiness = business
+    //selectedMarker -- marker will either be at exploring, saved area or saved spot
 
     await fetch(`get-savedSpot/${business.address}`)
     .then(res => res.json())
@@ -134,12 +135,21 @@ const loadSavedSide = (areas, spots) => {
         sidebarSpot.innerHTML = spot.displayName
         sideSavedSpots.append(sidebarSpot)
 
+        if (visitedSpots.hasOwnProperty(spot.business.id)) {
+            savedSpots[spot.business.id] = visitedSpots[spot.business.id]
+        } else {
+            savedSpots[spot.business.id] = {
+                "type": spot.business.type,
+                "marker": makeMarker(spot.business, false)
+            }
+        }
+
         sidebarSpot.addEventListener('click', () => {
             addMarkerToSide(spot.business)
-            // selectedMarker = marker from savedSpot
+            selectedMarker = savedSpots[spot.business.id]['marker']
 
             geocoder.setFlyTo(false)
-            geocoder.query(spot.address)
+            geocoder.query(spot.areaOrigin)
 
             map.flyTo({
                 center: [spot.lng, spot.lat],
@@ -166,6 +176,12 @@ saveSpot.addEventListener('click', () => {
         .then(() => {
             spotStar.innerHTML = '&#9734'
             spotSaved = false
+            delete savedSpots[sideViewBusiness.id]
+            removeSpots[sideViewBusiness.id] = {
+                "marker": selectedMarker,
+                "type": sideViewBusiness.type,
+                "zipSearch": sideViewBusiness.zipSearch
+            }
             getSaved()
         })
     } else {
@@ -182,6 +198,10 @@ saveSpot.addEventListener('click', () => {
         .then(() => {
             spotStar.innerHTML = '&#9733'
             spotSaved = true
+            savedSpots[sideViewBusiness.id] = selectedMarker
+            if (removeSpots.hasOwnProperty(sideViewBusiness.id)) {
+                delete removeSpots[sideViewBusiness.id]
+            }
             getSaved()
         })
     }
@@ -228,11 +248,22 @@ const visitTrue = () => {
         "type": sideViewBusiness.type,
         "marker": selectedMarker
     }
+    if (removeVisits.hasOwnProperty(sideViewBusiness.id)) {
+        delete removeVisits[sideViewBusiness.id]
+    }
 }
+
 
 const visitFalse = () => {
     markerElement = selectedMarker.getElement()
     markerElement.style.background = unvisitedMarkerStr + `url(${sideViewBusiness.img_url})`
     markerElement.style.backgroundSize = 'cover'
+
+    removeVisits[sideViewBusiness.id] = {
+        "marker": selectedMarker,
+        "type": sideViewBusiness.type,
+        "zipSearch": sideViewBusiness.zipSearch
+    }
+
     delete visitedSpots[sideViewBusiness.id]
 }
