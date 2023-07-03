@@ -183,7 +183,6 @@ const toggleFilterButtons = (type, active) => {
                 savedAreas[area]['markers'][type].forEach(marker => {
                     markerKey = Object.keys(marker)[0]
                     markerValue = Object.values(marker)[0]
-                    // console.log(visitedSpots.hasOwnProperty(Object.keys(marker)[0]))
                     if (!visitedSpots.hasOwnProperty(markerKey)) {
                         markerValue.addTo(map)
                     }
@@ -194,7 +193,6 @@ const toggleFilterButtons = (type, active) => {
                 exploringMarkers[type].forEach(marker => {
                     markerKey = Object.keys(marker)[0]
                     markerValue = Object.values(marker)[0]
-                    // console.log(visitedSpots.hasOwnProperty(Object.keys(marker)[0]))
                     if (!visitedSpots.hasOwnProperty(markerKey)) {
                         markerValue.addTo(map)
                     }
@@ -221,7 +219,6 @@ const toggleFilterButtons = (type, active) => {
                 savedAreas[area]['markers'][type].forEach(marker => {
                     markerKey = Object.keys(marker)[0]
                     markerValue = Object.values(marker)[0]
-                    // console.log(visitedSpots.hasOwnProperty(Object.keys(marker)[0]))
                     if (!visitedSpots.hasOwnProperty(markerKey)) {
                         markerValue.remove(map)
                     }
@@ -231,7 +228,6 @@ const toggleFilterButtons = (type, active) => {
                 exploringMarkers[type].forEach(marker => {
                     markerKey = Object.keys(marker)[0]
                     markerValue = Object.values(marker)[0]
-                    // console.log(visitedSpots.hasOwnProperty(Object.keys(marker)[0]))
                     if (!visitedSpots.hasOwnProperty(markerKey)) {
                         markerValue.remove(map)
                     }

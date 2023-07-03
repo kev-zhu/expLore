@@ -4,6 +4,7 @@ const xSideBar = document.querySelector('.xSidebar')
 const sideContent = document.querySelector('.sidebar-content')
 const sideSavedAreas = document.querySelector('.savedAreas')
 const sideSavedSpots = document.querySelector('.savedSpots')
+const sideExploredSpots = document.querySelector('.exploredSpots')
 
 const saveSpot = document.querySelector('.save-spot')
 const spotStar = document.querySelector('#spotStar')
@@ -92,6 +93,7 @@ const loadSavedSide = (areas, spots) => {
     suggestions = document.querySelector('.suggestions-wrapper')
     document.querySelector('.areaCount').innerHTML = `${areas.length}`
     document.querySelector('.spotCount').innerHTML = `${spots.length}`
+    document.querySelector('.exploreCount').innerHTML = `${Object.keys(visitedSpots).length}`
 
     //clear all saved first
     while (sideSavedAreas.firstChild) {
@@ -100,6 +102,10 @@ const loadSavedSide = (areas, spots) => {
 
     while (sideSavedSpots.firstChild) {
         sideSavedSpots.removeChild(sideSavedSpots.firstChild)
+    }
+
+    while (sideExploredSpots.firstChild) {
+        sideExploredSpots.removeChild(sideExploredSpots.firstChild)
     }
 
     //then load saved from call -- get most up to date of user's all saved
@@ -140,14 +146,15 @@ const loadSavedSide = (areas, spots) => {
         } else {
             savedSpots[spot.business.id] = {
                 "type": spot.business.type,
-                "marker": makeMarker(spot.business, false)
+                "marker": makeMarker(spot.business, false),
+                "business": spot.business
             }
         }
 
         sidebarSpot.addEventListener('click', () => {
             addMarkerToSide(spot.business)
             selectedMarker = savedSpots[spot.business.id]['marker']
-
+            
             geocoder.setFlyTo(false)
             geocoder.query(spot.areaOrigin)
 
@@ -156,12 +163,35 @@ const loadSavedSide = (areas, spots) => {
                 zoom: 14,
                 essential: true
             })
-
             suggestions.classList.add('hide')
             spinEnabled = false
-            
         })
     })
+
+    Object.keys(visitedSpots).forEach(id => {
+        const visitedBusinesses = visitedSpots[id].business
+
+        const vSpot = document.createElement('div')
+        vSpot.className = 'exploredSpot'
+        vSpot.innerHTML = visitedBusinesses.name
+        sideExploredSpots.append(vSpot)
+
+        vSpot.addEventListener('click', () => {
+            addMarkerToSide(visitedBusinesses)
+            selectedMarker = visitedSpots[id]['marker']
+
+            geocoder.setFlyTo(false)
+            geocoder.query(visitedBusinesses.area)
+
+            map.flyTo({
+                center: [visitedBusinesses.lng, visitedBusinesses.lat],
+                zoom: 14,
+                essential: true
+            })
+            suggestions.classList.add('hide')
+            spinEnabled = false
+        })
+    })  
 }
 
 saveSpot.addEventListener('click', () => {
@@ -221,6 +251,7 @@ visitSpot.addEventListener('click', () => {
         })
         .then(() => {
             visitFalse()
+            getSaved()
         })
     } else {
         visited = true
@@ -234,6 +265,7 @@ visitSpot.addEventListener('click', () => {
         })
         .then(() => {
             visitTrue()
+            getSaved()
         })
     }
 }) 
@@ -246,7 +278,8 @@ const visitTrue = () => {
     markerElement.style.backgroundSize = 'cover'
     visitedSpots[sideViewBusiness.id] = {
         "type": sideViewBusiness.type,
-        "marker": selectedMarker
+        "marker": selectedMarker,
+        "business": sideViewBusiness
     }
     if (removeVisits.hasOwnProperty(sideViewBusiness.id)) {
         delete removeVisits[sideViewBusiness.id]

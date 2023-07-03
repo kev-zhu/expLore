@@ -194,7 +194,7 @@ def del_visit(request):
 @login_required
 def get_all_visit(request):
     # visitedBusinessId = [visit.business.id for visit in Visit.objects.all()]
-    allVisitBusiness = [visit.business for visit in Visit.objects.all()]
+    allVisitBusiness = [visit.business for visit in Visit.objects.filter(user=request.user)]
     visitedBusiness = list(map(model_to_dict, allVisitBusiness))
 
     return JsonResponse({'businesses': visitedBusiness})

@@ -187,7 +187,6 @@ const clearExploringMarkers = () => {
             markerKey = Object.keys(marker)[0]
             markerValue = Object.values(marker)[0]
 
-            //****also check if in spots/visited first
             if (!visitedSpots.hasOwnProperty(markerKey)) {
                 markerValue.remove()
             }
@@ -214,7 +213,8 @@ const clearExploringMarkers = () => {
             removeVisits[spotId]['marker'].remove()
             delete removeVisits[spotId]
         }
-    })}
+    })
+}
 
 const checkInSavedArea = (id, type, zipSearch) => {
     try {
@@ -319,6 +319,7 @@ const getVisited = async () => {
             visitedSpots[business.id] = {
                 "type": business.type,
                 "marker": makeMarker(business, true),
+                "business": business
             } 
         }
     })

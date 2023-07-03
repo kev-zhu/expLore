@@ -165,13 +165,13 @@ body {
     
 }
 
-.savedArea, .savedSpot {
+.savedArea, .savedSpot, .exploredSpot {
     white-space: nowrap;
     overflow-x: clip;
     padding: 5px;   
 }
 
-.savedArea:hover, .savedSpot:hover {
+.savedArea:hover, .savedSpot:hover, .exploredSpot:hover {
     background-color: rgba(225,225,225,0.5);
 }
 
