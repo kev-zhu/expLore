@@ -82,14 +82,17 @@ body {
     z-index: 1;
     overflow: hidden;
     background-color: white;
-    top: 60px;
+    border-radius: 5px;
+    left: 10px;
+    top: 55px;
     width: 0px;
-    height: calc(100% - 60px);
+    height: calc(100% - 55px - 10px);
     transition: width .2s ease;
 }
 
 .sidebar.active {
-    width: 250px;
+    left: 10px;
+    width: 240px;
 }
 
 .sidebar::-webkit-scrollbar {
@@ -100,8 +103,8 @@ body {
     position: absolute;
     top: 0;
     right: 0;
-    height: 30px;
-    width: 30px;
+    height: 25px;
+    width: 25px;
     background-color: inherit;
     border-radius: 50%;
     z-index: 2;
@@ -189,4 +192,17 @@ body {
 
 .suggestions-wrapper.hide {
     display: none;
+}
+
+.map-container {
+    padding: 0px;
+    margin: 0px;
+}
+
+.card-form {
+    overflow: clip;
+}
+
+.form-buttons {
+    float: right
 }

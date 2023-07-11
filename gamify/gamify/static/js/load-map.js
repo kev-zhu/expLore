@@ -4,7 +4,7 @@ mapboxgl.accessToken = 'pk.eyJ1Ijoia2V2aW56aHUzNSIsImEiOiJjbGlqZDlucXYwNjZuM3Fxd
 const unvisitedMarkerStr = 'linear-gradient(rgba(255,255,255,.7), rgba(255,255,255,.7)), '
 const markerStartDiameter = 40
 let currMarkerDiameter = markerStartDiameter
-let currentLoc, exploringZip, exploringLoc, hoveringMarker, selectedMarker
+let exploringZip, exploringLoc, hoveringMarker, selectedMarker
 let spinEnabled = true
 let savedAreas = {}
 let savedSpots = {}
@@ -53,11 +53,11 @@ window.addEventListener('blur', () => {
     }
 })
 
-
 //search for place
 const geocoder = new MapboxGeocoder({
         accessToken: mapboxgl.accessToken,
         mapboxgl: mapboxgl,
+        marker: false
     })
 
 map.addControl(geocoder, 'top-left')
@@ -72,12 +72,36 @@ searchEvents.forEach(event => {
     })
 })
 
+let searchMarker
 geocoder.on('result', (res) => {
     //enable spin only important for first instance if no geolocation found -- else this does nothing really
     spinEnabled = false
     exploringLoc = res.result.geometry.coordinates
     clearExploringMarkers()
     reverseGeoSearch(res.result.geometry.coordinates)
+
+    //clear search marker later on new search before rendering a new search marker
+    if (searchMarker != null) {
+        searchMarker.remove()
+    }
+
+    //search marker
+    searchMarker = new mapboxgl.Marker({
+        color: 'black'
+    })
+    .setLngLat(exploringLoc)
+    .addTo(map)
+
+    let popUp = new mapboxgl.Popup({
+        anchor: 'left',
+    }).setHTML(`<a href="/spot/request-spot?lng=${exploringLoc[0]}&lat=${exploringLoc[1]}">Register this Spot as a Business?</a>`)
+
+    searchMarker.setPopup(popUp)
+
+    searchMarker.getElement().addEventListener('click', () => {
+        console.log('popup menu option to add to map -- redirect to a page?')
+        searchMarker.togglePopup()
+    })
 })
 
 //use lng,lat to retrieve data from server of that area
@@ -232,7 +256,7 @@ const reverseGeoSearch = async ([lng, lat]) => {
         .then(async (data) => {
             const place = data.features.reduce((prevFeature, feature) => feature.place_type[0] === 'place' ? feature : null || prevFeature, null)       
 
-            if (place !== null) {
+            if (place != null) {
                 const area = place.place_name
                 exploringZip = data.features.reduce((prevFeature, feature) => feature.place_type[0] === 'postcode' ? feature : null || prevFeature, null).text
                 
@@ -259,7 +283,6 @@ const getGeoLoc = async () => {
         const pos = await new Promise((resolve, reject) => {
             navigator.geolocation.getCurrentPosition(resolve, reject)
         })
-        currentLoc = [pos.coords.longitude, pos.coords.latitude]
 
         await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${pos.coords.longitude},${pos.coords.latitude}.json?access_token=${mapboxgl.accessToken}`)
         .then(res => res.json())
@@ -271,7 +294,7 @@ const getGeoLoc = async () => {
         spinEnabled = false
         
         //call stuff to add pinned locations
-        exploringLoc = currentLoc
+        exploringLoc = [pos.coords.longitude, pos.coords.latitude]
         reverseGeoSearch(currentLoc)
     } catch {
         console.log('Your geolocation is currently off.')

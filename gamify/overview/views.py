@@ -61,6 +61,7 @@ def get_yelp_top_10(lat, lng, type, area, zip):
                 area = area,
                 zipSearch = zip,
 
+                sourced_by = 'Yelp Fusion API',
                 lat = business['coordinates']['latitude'],
                 lng = business['coordinates']['longitude'],
                 phone = business['display_phone'],
@@ -69,8 +70,7 @@ def get_yelp_top_10(lat, lng, type, area, zip):
                 name = business['name'],
                 rating = business['rating'],
                 reviewCount = business['review_count'],
-                yelpLink = business['url']
-            )
+                yelpLink = business['url'])
 
 
 @login_required
@@ -193,7 +193,6 @@ def del_visit(request):
 #instead have this send list of business objects over
 @login_required
 def get_all_visit(request):
-    # visitedBusinessId = [visit.business.id for visit in Visit.objects.all()]
     allVisitBusiness = [visit.business for visit in Visit.objects.filter(user=request.user)]
     visitedBusiness = list(map(model_to_dict, allVisitBusiness))
 

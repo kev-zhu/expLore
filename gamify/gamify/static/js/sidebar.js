@@ -81,6 +81,7 @@ const addMarkerToSide = async (business) => {
     //do something here to scale and center image before rendering on sidemarker
     markerSide.querySelector('#marker-image').src = business.img_url
     markerSide.querySelector('#marker-name').innerHTML = business.name
+    markerSide.querySelector('#marker-source').innerHTML = business.sourced_by
     markerSide.querySelector('#marker-address').innerHTML = business.address
     markerSide.querySelector('#marker-phone').innerHTML = business.phone
     markerSide.querySelector('#marker-rating').innerHTML = `${business.rating} Stars`
@@ -168,30 +169,35 @@ const loadSavedSide = (areas, spots) => {
         })
     })
 
-    Object.keys(visitedSpots).forEach(id => {
-        const visitedBusinesses = visitedSpots[id].business
+    //sort visited business first because was in unorganized obj/dict format
+    const visitedBusinesses = []
+    Object.values(visitedSpots).forEach(spot => {
+        visitedBusinesses.push(spot.business)
+    })
+    visitedBusinesses.sort((x, y) => x.name > y.name ? 1 : x.name < y.name ? -1 : 0)
 
+    visitedBusinesses.forEach(visitedBusiness => {
         const vSpot = document.createElement('div')
         vSpot.className = 'exploredSpot'
-        vSpot.innerHTML = visitedBusinesses.name
+        vSpot.innerHTML = visitedBusiness.name
         sideExploredSpots.append(vSpot)
 
         vSpot.addEventListener('click', () => {
-            addMarkerToSide(visitedBusinesses)
-            selectedMarker = visitedSpots[id]['marker']
+            addMarkerToSide(visitedBusiness)
+            selectedMarker = visitedSpots[visitedBusiness.id]['marker']
 
             geocoder.setFlyTo(false)
-            geocoder.query(visitedBusinesses.area)
+            geocoder.query(visitedBusiness.area)
 
             map.flyTo({
-                center: [visitedBusinesses.lng, visitedBusinesses.lat],
+                center: [visitedBusiness.lng, visitedBusiness.lat],
                 zoom: 14,
                 essential: true
             })
             suggestions.classList.add('hide')
             spinEnabled = false
         })
-    })  
+    })
 }
 
 saveSpot.addEventListener('click', () => {

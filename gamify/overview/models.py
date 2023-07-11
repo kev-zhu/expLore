@@ -10,6 +10,7 @@ class Business(models.Model):
     zipSearch = models.CharField(default=None, null=False, blank=False)
 
     #important info of business
+    sourced_by= models.CharField(default=None, null=False, blank=False)
     lat = models.FloatField()
     lng = models.FloatField()
     phone = models.CharField()
