@@ -206,3 +206,7 @@ body {
 .form-buttons {
     float: right
 }
+
+.report {
+    color: red
+}

@@ -1,4 +1,3 @@
-from calendar import c
 from django.shortcuts import render, redirect
 from .models import AddBusiness
 from overview.models import Business
@@ -38,7 +37,7 @@ def request_spot(request):
         if not -180 < lng < 180 or not -90 < lat < 90:
             return redirect('overview')
         
-        return render(request, 'spot/add-spot.html')
+        return render(request, 'request/add-spot.html')
 
 
     if (request.method == 'POST'):

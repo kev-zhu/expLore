@@ -1,5 +1,5 @@
 from django.db import models
-
+from overview.models import Business
 # Create your models here.
 
 #request add Business
@@ -27,3 +27,9 @@ class AddBusiness(models.Model):
 
 
 #request delete business
+class DeleteBusiness(models.Model):
+    requestType = models.CharField(default=None, null=False, blank=False)
+    business = models.ForeignKey(to=Business, on_delete=models.CASCADE, null=False)
+
+    def __str__(self):
+        return f'{self.requestType} -- {self.business.zipSearch}: {self.business.type}: {self.business.area} - {self.business.name}'

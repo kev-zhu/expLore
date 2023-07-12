@@ -138,7 +138,7 @@ const filterTypes = [
         'btnElement': foodButton,
         'type': 'food',
         'color': 'rgb(168, 224, 150)',
-        'defaultOn': true
+        'defaultOn': false
     },
     {
         'btnElement': activityButton,
