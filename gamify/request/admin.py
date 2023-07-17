@@ -1,7 +1,7 @@
 from django.contrib import admin
-from .models import AddBusiness, DeleteBusiness
+from .models import AddedBusiness, ReportedBusiness
 
 # Register your models here.
 
-admin.site.register(AddBusiness)
-admin.site.register(DeleteBusiness)
+admin.site.register(AddedBusiness)
+admin.site.register(ReportedBusiness)

@@ -46,8 +46,11 @@ div#map {
     width: 300px;
 }
 
+#user-settings > .btn {
+    border: solid 1px lightgrey
+}
+
 .user-setting > .settings::-webkit-scrollbar {
-    
     display: none;
 }
 
@@ -209,4 +212,13 @@ body {
 
 .report {
     color: red
+}
+
+.staff-sidebar {
+    height: 100vh;
+    overflow-y: scroll
+}
+
+.staff-sidebar::-webkit-scrollbar {
+    display: none
 }

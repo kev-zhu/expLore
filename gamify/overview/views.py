@@ -33,9 +33,9 @@ def get_poi(request):
 
 
         for businessType in types:
-            if Business.objects.filter(area=area, zipSearch=zip, type=businessType).count() == 0:
+            if Business.objects.filter(area=area, zipSearch=zip, type=businessType, approved=True).count() == 0:
                 get_yelp_top_10(lat, lng, businessType, area, zip)
-            for business in Business.objects.filter(area=area, zipSearch=zip, type=businessType):
+            for business in Business.objects.filter(area=area, zipSearch=zip, type=businessType, approved=True):
                 businesses.append(model_to_dict(business))
 
     return JsonResponse({'businesses': businesses})
@@ -55,11 +55,12 @@ def get_yelp_top_10(lat, lng, type, area, zip):
     businesses = r.json()['businesses']
 
     for business in businesses:
-        if (Business.objects.filter(lat=business['coordinates']['latitude'], lng=business['coordinates']['longitude']).count() == 0):
+        if (Business.objects.filter(lat=business['coordinates']['latitude'], lng=business['coordinates']['longitude'], approved=True).count() == 0):
             Business.objects.create(
                 type = type,
                 area = area,
                 zipSearch = zip,
+                approved = True,
 
                 sourced_by = 'Yelp Fusion API',
                 lat = business['coordinates']['latitude'],
@@ -110,7 +111,10 @@ def save_spot(request):
     if request.method == "POST":
         data = json.loads(request.body)
         if (Spot.objects.filter(user=request.user, displayName=data['display']).count() == 0):
-            businessTarget = Business.objects.get(address=data['address'])
+            try:
+                businessTarget = Business.objects.get(address=data['address'], approved=True)
+            except:
+                return JsonResponse({'error': 'Unable to retrieve business from DB'})
             Spot.objects.create(user=request.user, displayName=data['display'], lat=data['lat'], lng=data['lng'], address=data['address'], areaOrigin=businessTarget.area, business=businessTarget)
         return JsonResponse({'success': 'Spot has been added to DB'})
     return JsonResponse({'error': 'Request must be post'})
@@ -146,7 +150,10 @@ def get_all_saved(request):
     list_spots = (list(map(model_to_dict, all_spots)))
 
     for s in range(len(list_spots)):
-        targetBusiness = Business.objects.get(pk=list_spots[s]['business'])
+        try:
+            targetBusiness = Business.objects.get(pk=list_spots[s]['business'], approved=True)
+        except:
+            return JsonResponse({'error': 'Error retrieving business models from DB'})
         list_spots[s]['business'] = model_to_dict(targetBusiness)
 
     spots = sorted(list_spots, key=lambda x: x['displayName'])
@@ -157,7 +164,7 @@ def get_all_saved(request):
 @login_required
 def get_business_visit(request, id):
     try: 
-        businessTarget = Business.objects.get(id=id)
+        businessTarget = Business.objects.get(id=id, approved=True)
         Visit.objects.get(user=request.user, business=businessTarget)
     except:
         return JsonResponse({"visited": False})    
@@ -169,7 +176,7 @@ def save_visit(request):
     if request.method == 'POST':
         data = json.loads(request.body)
         try:
-            business = Business.objects.get(pk=data['id'])
+            business = Business.objects.get(pk=data['id'], approved=True)
             Visit.objects.create(user=request.user, business=business)
         except:
             return JsonResponse({'Error': 'Failed to add visit to DB'})
@@ -182,7 +189,7 @@ def del_visit(request):
     if request.method == 'POST':
         data = json.loads(request.body)
         try:
-            business = Business.objects.get(pk=data['id'])
+            business = Business.objects.get(pk=data['id'], approved=True)
             Visit.objects.get(user=request.user, business=business).delete()
         except:
             return JsonResponse({'Error', 'Failed to remove visit from DB'})

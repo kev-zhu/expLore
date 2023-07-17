@@ -44,17 +44,19 @@
         </button>
 
         <div class="settings" id="user-settings" hidden>
+            
+            {% if request.user.is_staff %}
+            <a href="{% url 'staff-panel' %}" class="btn form-control">
+                Admin Panel
+            </a>
+            {% endif %}
 
             <form action="{% url 'logout' %}" method="post">
                 {% csrf_token %}
-                <div class="form-group">
-                    <input class="form-control" type="submit" value="Sign Out">
-                </div>
+                <input class="form-control" type="submit" value="Sign Out">
             </form>
-
-        </div>
+        </div> 
     </div>
-
 </div>
 
 

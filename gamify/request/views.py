@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import AddBusiness
+from .models import AddedBusiness, ReportedBusiness
 from overview.models import Business
 from django.contrib.auth.models import User
 from django.http import JsonResponse
@@ -95,21 +95,46 @@ def send_request(request):
             return JsonResponse({'error': 'Cannot find business in the YELP Fusion DB'})
 
         sourcedBy = User.objects.get(pk=data['userId']).username
-        AddBusiness.objects.create(
-            requestType='add', 
-            type=data['category'], 
-            area=data['area'], 
-            zipSearch=business['location']['zip_code'], 
 
-            sourced_by=sourcedBy, 
-            lat=business['coordinates']['latitude'], 
-            lng=business['coordinates']['latitude'], 
-            phone=business['display_phone'],
-            img_url = business['image_url'],
-            address = f"{', '.join(business['location']['display_address'])}",
-            name = business['name'],
-            rating = business['rating'],
-            reviewCount = business['review_count'],
-            yelpLink = business['url'])
+        #prevent duplicate requests
+        if AddedBusiness.objects.filter(yelpID=businessID).count() == 0:
+            businessRequest = Business.objects.create(
+                type=data['category'], 
+                area=data['area'], 
+                zipSearch=business['location']['zip_code'], 
+                approved=False,
+
+                sourced_by=sourcedBy, 
+                lat=business['coordinates']['latitude'], 
+                lng=business['coordinates']['longitude'], 
+                phone=business['display_phone'],
+                img_url = business['image_url'],
+                address = f"{', '.join(business['location']['display_address'])}",
+                name = business['name'],
+                rating = business['rating'],
+                reviewCount = business['review_count'],
+                yelpLink = business['url'])
+
+            AddedBusiness.objects.create(
+                requestType='add', 
+                yelpID = businessID,
+                business = businessRequest)
+
 
         return JsonResponse({'success': 'Request has been sent to admin for approval'}, status=200)
+
+
+def report_request(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+
+        #error when business ID cannot be found in DB
+        try:
+            reportBusiness = Business.objects.get(pk=data['businessID'])
+        except:
+            return JsonResponse({'error': 'Business cannot be found in DB and therefore cannot be reported.'})
+
+        ReportedBusiness.objects.create(requestType='report', business=reportBusiness, reported_by=request.user.username, report_message=data['reason'])
+        return JsonResponse({'success': 'Business has been reported. Please wait for staff to investigate the report.'})
+
+    return JsonResponse({'error': 'Reports have to be made as a POST request.'})

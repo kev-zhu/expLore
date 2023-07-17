@@ -3,33 +3,28 @@ from overview.models import Business
 # Create your models here.
 
 #request add Business
-class AddBusiness(models.Model):
+class AddedBusiness(models.Model):
     requestType = models.CharField()
+    yelpID = models.CharField(default=None, null=False, blank=False)
     
-    type = models.CharField()
-    area = models.CharField()
-    zipSearch = models.CharField(default=None, null=False, blank=False)
-
-    #important info of business
-    sourced_by= models.CharField(default=None, null=False, blank=False)
-    lat = models.FloatField()
-    lng = models.FloatField()
-    phone = models.CharField()
-    img_url = models.CharField()
-    address = models.CharField()
-    name = models.CharField()
-    rating = models.FloatField()
-    reviewCount = models.IntegerField()
-    yelpLink = models.CharField()
+    business = models.ForeignKey(to=Business, on_delete=models.CASCADE, default=None, blank=False, null=False)
 
     def __str__(self):
-        return f'{self.requestType.capitalize()} -- {self.zipSearch}: {self.type}: {self.area} - {self.name}'
+        return f'{self.requestType.capitalize()} -- {self.business.zipSearch}: {self.business.type}: {self.business.area} - {self.business.name}'
 
+    class Meta:
+        verbose_name_plural = "Added Businesses"
 
 #request delete business
-class DeleteBusiness(models.Model):
+class ReportedBusiness(models.Model):
     requestType = models.CharField(default=None, null=False, blank=False)
-    business = models.ForeignKey(to=Business, on_delete=models.CASCADE, null=False)
+    reported_by = models.CharField(default=None, null=False, blank=False)
+    report_message = models.TextField(default=None, null=False, blank=False)
+
+    business = models.ForeignKey(to=Business, on_delete=models.CASCADE, default=None, blank=False, null=False)
 
     def __str__(self):
-        return f'{self.requestType} -- {self.business.zipSearch}: {self.business.type}: {self.business.area} - {self.business.name}'
+        return f'{self.requestType.capitalize()} -- {self.business.zipSearch}: {self.business.type}: {self.business.area} - {self.business.name}'
+
+    class Meta:
+        verbose_name_plural = "Reported Businesses"

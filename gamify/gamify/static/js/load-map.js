@@ -94,7 +94,7 @@ geocoder.on('result', (res) => {
 
     let popUp = new mapboxgl.Popup({
         anchor: 'left',
-    }).setHTML(`<a href="/spot/request-spot?lng=${exploringLoc[0]}&lat=${exploringLoc[1]}">Register this Spot as a Business?</a>`)
+    }).setHTML(`<a href="/request/request-spot?lng=${exploringLoc[0]}&lat=${exploringLoc[1]}">Register this Spot as a Business?</a>`)
 
     searchMarker.setPopup(popUp)
 
@@ -263,7 +263,8 @@ const reverseGeoSearch = async ([lng, lat]) => {
                 setViewingLoc(area)
 
                 //prevention of rerendering pins alraedy loaded from saved list
-                const alreadyOnSavedList = Object.keys(savedAreas).reduce((exists, checkArea) => exists || exploringZip === checkArea, false)
+                // const alreadyOnSavedList = Object.keys(savedAreas).reduce((exists, checkArea) => exists || exploringZip === checkArea, false)
+                const alreadyOnSavedList = savedAreas.hasOwnProperty(exploringZip)
                 if (alreadyOnSavedList) {
                     exploringMarkers = savedAreas[exploringZip].markers
                 } else {    

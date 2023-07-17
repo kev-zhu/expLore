@@ -27,7 +27,7 @@ let business
 
 fetchButton.addEventListener('click', () => {
     //fetch api call with coords (coordinates of the current place)
-    fetch(`/spot/yelp-fill/${lng}/${lat}`)
+    fetch(`/request/yelp-fill/${lng}/${lat}`)
         .then(res => res.json())
         .then(data => {
             business = data.businessData
@@ -97,7 +97,7 @@ cancelRequest.addEventListener('click', () => {
 
 const sendSubmitRequest = (area) => {
     //change form up to only include the essnetial for yelp search?
-    fetch('/spot/send-request', {
+    fetch('/request/send-request', {
         body: JSON.stringify({
             'userId': JSON.parse(document.getElementById('user_id').textContent),
             'name': formName.value,

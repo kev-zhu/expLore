@@ -1,0 +1,139 @@
+{% extends 'staff/staff_panel.html' %}
+{% load static %}
+
+{% block staffpagetitle %}Requests{% endblock %}
+
+{% block staffpagecontent %}
+
+{% if requests %}
+<span class="fs-5"> Business Requests</span>
+
+<div class="accordion" id="requestLog">
+    {% for request in requests %}
+    <div class="accordion-item add-{{request.id}}">
+        <h2 class="accordion-header" id="panelsStayOpen-request{{request.id}}">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#panelsStayOpen-collapse{{request.id}}" aria-expanded="false"
+                aria-controls="panelsStayOpen-collapse{{request.id}}">
+                {{ request.business.type | title }} Request: {{ request.business.name }} - {{ request.business.address }}
+            </button>
+        </h2>
+        <div id="panelsStayOpen-collapse{{request.id}}" class="accordion-collapse collapse"
+            aria-labelledby="panelsStayOpen-request{{request.id}}">
+            <div class="accordion-body">
+                <div class="requestInfo">
+                    <div>
+                        <strong>Requested By: </strong>
+                        {{ request.business.sourced_by }} 
+                    </div>
+                    <div>
+                        <strong>Type: </strong>
+                        {{ request.business.type | title }} 
+                    </div>
+                    <div>
+                        <strong>Address: </strong>{{ request.business.address }}
+                    </div>
+                    <div>
+                        <strong>Phone: </strong>{{ request.business.phone }}
+                    </div>
+                    <div>
+                        <strong>Coordinates: </strong>
+                        Lat - {{ request.business.lat }}, Lng - {{ request.business.lng }} 
+                    </div>
+                    <div>
+                        <strong>Location Image: </strong>
+                        <a href="{{request.business.img_url}}" target="_blank">Business Image for {{ request.business.name }}</a>
+                    </div>
+
+                    <div>
+                        <strong>Yelp:</strong>
+                        <a href="{{request.business.yelpLink}}" target="_blank">Yelp Link for {{ request.business.name }}</a>
+                    </div>
+                </div>
+
+
+                <div class="btn btn-primary request-approve" data-id="{{request.id}}">Approve</div>
+                <div class="btn btn-primary request-reject" data-id="{{request.id}}">Reject</div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endif %}
+
+
+{% if requests and reports %}
+<br>
+<hr>
+<br>
+{% endif %}
+
+{% if reports %}
+<span class="fs-5"> Business Reports</span>
+
+<div class="accordion" id="reportLog">
+    {% for report in reports %}
+    <div class="accordion-item add-{{report.id}}">
+        <h2 class="accordion-header" id="panelsStayOpen-report{{report.id}}">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#panelsStayOpen-collapse{{report.id}}" aria-expanded="false"
+                aria-controls="panelsStayOpen-collapse{{report.id}}">
+                {{ report.business.type | title }} Request: {{ report.business.name }} - {{ report.business.address }}
+            </button>
+        </h2>
+        <div id="panelsStayOpen-collapse{{report.id}}" class="accordion-collapse collapse"
+            aria-labelledby="panelsStayOpen-report{{report.id}}">
+            <div class="accordion-body">
+                <div class="reportInfo">
+                    <div>
+                        <strong>Reported By: </strong>
+                        {{ report.reported_by }}
+                    </div>
+                    <div>
+                        <strong>Reason for Report: </strong>
+                        {{ report.report_message }}
+                    </div>
+                    <div>
+                        <strong>Type: </strong>
+                        {{ report.business.type | title }} 
+                    </div>
+                    <div>
+                        <strong>Address: </strong>
+                        {{ report.business.address }}
+                    </div>
+                    <div>
+                        <strong>Phone: </strong>
+                        {{ report.business.phone }}
+                    </div>
+                    <div>
+                        <strong>Coordinates: </strong>
+                        Lat - {{ report.business.lat }}, Lng - {{ report.business.lng }} 
+                    </div>
+                    <div>
+                        <strong>Location Image: </strong>
+                        <a href="{{report.business.img_url}}" target="_blank">Business Image for {{ report.business.name }}</a>
+                    </div>
+                    <div>
+                        <strong>Yelp:</strong>
+                        <a href="{{report.business.yelpLink}}" target="_blank">Yelp Link for {{ report.business.name }}</a>
+                    </div>
+                </div>
+
+
+                <div class="btn btn-primary report-approve" data-id="{{report.id}}">Approve</div>
+                <div class="btn btn-primary report-reject" data-id="{{report.id}}">Reject</div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+
+{% endif %}
+
+
+
+<script src="{% static 'js/staff/businessRequest.js' %}"></script>
+<script src="{% static 'js/staff/businessReport.js' %}"></script>
+{% endblock %}

@@ -8,6 +8,7 @@ class Business(models.Model):
     type = models.CharField()
     area = models.CharField()
     zipSearch = models.CharField(default=None, null=False, blank=False)
+    approved = models.BooleanField(default=False, null=False, blank=False)
 
     #important info of business
     sourced_by= models.CharField(default=None, null=False, blank=False)

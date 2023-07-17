@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+
+<!-- add css hover hightlight -->
+
+<div class="row g-0">
+    <div class="d-flex flex-column flex-shrink-0 p-3 bg-light col-md-2 staff-sidebar">
+        <a href="{% url 'staff-panel' %}" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
+            <span class="fs-4">Staff Portal</span>
+        </a>
+        <hr>
+        <ul class="nav nav-pills flex-column mb-auto">
+            <li class="nav-item">
+                <a href="{% url 'request-log' %}" class="nav-link link-dark" aria-current="page">
+                    Submitted Requests
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-link link-dark">
+                    Other Settings (nothing)
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'overview' %}" class="nav-link link-dark">
+                    Return To Main
+                </a>
+            </li>
+            <li>
+                <form action="{% url 'logout' %}" method="post">
+                    {% csrf_token %}
+                    <a onclick="this.parentNode.submit()" class="nav-link link-dark"> 
+                        Logout
+                    </a>
+                </form>
+            </li>
+        </ul>
+    </div>
+    
+    <div class="col-md-10">
+        <div class="container mt-3">
+            <span class="fs-4">{% block staffpagetitle %}{% endblock %}</span>
+
+            <br>
+            <br>
+            {% block staffpagecontent %}
+            {% endblock %}
+
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

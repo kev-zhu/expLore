@@ -21,4 +21,5 @@ urlpatterns = [
     path('authentication/', include('authentication.urls')),
     path('', include('overview.urls')),
     path('request/', include('request.urls')),
+    path('staff/', include('staff.urls')),
 ]
