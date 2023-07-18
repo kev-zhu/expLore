@@ -18,12 +18,20 @@ let visited = false
 
 
 const sideOpen = () => {
-    sideBar.classList.add('active')
+    if (directionEnabled) {
+        sideBar.classList.add('diractive')
+    } else {
+        sideBar.classList.add('active')
+    }
     sideBarBtn.classList.add('active')
 }
 
 const sideClose = () => {
-    sideBar.classList.remove('active')
+    if (directionEnabled) {
+        sideBar.classList.remove('diractive')
+    } else {
+        sideBar.classList.remove('active')
+    }
     sideBarBtn.classList.remove('active')
 }
 
@@ -40,7 +48,7 @@ xSideBar.addEventListener('click', () => {
 })
 
 sideBarBtn.addEventListener("click", () => {
-    if (sideBar.classList.contains('active')) {
+    if (sideBar.classList.contains('active') || sideBar.classList.contains('diractive')) {
         sideClose()
         sidePrevOpen = false
     } else {

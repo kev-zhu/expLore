@@ -44,7 +44,7 @@ map.on('zoom', () => {
 
 //when out of focus of window, revert marker back to original size
 window.addEventListener('blur', () => {
-    if (hoveringMarker != null) { 
+    if (hoveringMarker != null) {
         const markerElement = hoveringMarker.getElement()
         markerElement.style.width = markerElement.style.height = `${currMarkerDiameter}px`
         markerElement.style.zIndex = ''
@@ -55,10 +55,10 @@ window.addEventListener('blur', () => {
 
 //search for place
 const geocoder = new MapboxGeocoder({
-        accessToken: mapboxgl.accessToken,
-        mapboxgl: mapboxgl,
-        marker: false
-    })
+    accessToken: mapboxgl.accessToken,
+    mapboxgl: mapboxgl,
+    marker: false
+})
 
 map.addControl(geocoder, 'top-left')
 
@@ -89,8 +89,8 @@ geocoder.on('result', (res) => {
     searchMarker = new mapboxgl.Marker({
         color: 'black'
     })
-    .setLngLat(exploringLoc)
-    .addTo(map)
+        .setLngLat(exploringLoc)
+        .addTo(map)
 
     let popUp = new mapboxgl.Popup({
         anchor: 'left',
@@ -116,7 +116,7 @@ const makeMarkerArea = async (ln, lt, rName, zip) => {
                 if (!(business.type in currentMarkers)) {
                     currentMarkers[business.type] = []
                 }
-                
+
                 if (visitedSpots.hasOwnProperty(business.id)) {
                     marker[business.id] = visitedSpots[business.id]['marker']
                 } else if (savedSpots.hasOwnProperty(business.id)) {
@@ -127,7 +127,7 @@ const makeMarkerArea = async (ln, lt, rName, zip) => {
                 currentMarkers[business.type].push(marker)
             })
         }
-    )
+        )
     return currentMarkers
 }
 
@@ -167,7 +167,7 @@ const manageMarkerEvents = (marker, business) => {
 
     markerElement.addEventListener('mouseover', () => {
         hoveringMarker = marker
-        prevMarkerSize = Number(markerElement.style.width.substring(0, markerElement.style.width.length - 2))    
+        prevMarkerSize = Number(markerElement.style.width.substring(0, markerElement.style.width.length - 2))
         markerPos = markerElement.getBoundingClientRect()
 
         //zoomin pic
@@ -181,9 +181,9 @@ const manageMarkerEvents = (marker, business) => {
             anchor: 'left',
             offset: 105,
             closeButton: false,
-            closeOnClick: false,    
+            closeOnClick: false,
         })
-        .setHTML(`${business.name}<br>${business.address}<br>Rating: ${business.rating}<br>Reviews: ${business.reviewCount}`)
+            .setHTML(`${business.name}<br>${business.address}<br>Rating: ${business.rating}<br>Reviews: ${business.reviewCount}`)
 
         marker.setPopup(popUp)
         marker.togglePopup()
@@ -254,12 +254,12 @@ const reverseGeoSearch = async ([lng, lat]) => {
     await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${mapboxgl.accessToken}`)
         .then(res => res.json())
         .then(async (data) => {
-            const place = data.features.reduce((prevFeature, feature) => feature.place_type[0] === 'place' ? feature : null || prevFeature, null)       
+            const place = data.features.reduce((prevFeature, feature) => feature.place_type[0] === 'place' ? feature : null || prevFeature, null)
 
             if (place != null) {
                 const area = place.place_name
                 exploringZip = data.features.reduce((prevFeature, feature) => feature.place_type[0] === 'postcode' ? feature : null || prevFeature, null).text
-                
+
                 setViewingLoc(area)
 
                 //prevention of rerendering pins alraedy loaded from saved list
@@ -267,7 +267,7 @@ const reverseGeoSearch = async ([lng, lat]) => {
                 const alreadyOnSavedList = savedAreas.hasOwnProperty(exploringZip)
                 if (alreadyOnSavedList) {
                     exploringMarkers = savedAreas[exploringZip].markers
-                } else {    
+                } else {
                     exploringMarkers = await makeMarkerArea(lng, lat, area, exploringZip)
                     activeFilters.forEach(filter => {
                         toggleFilterButtons(filter, true)
@@ -286,14 +286,14 @@ const getGeoLoc = async () => {
         })
 
         await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${pos.coords.longitude},${pos.coords.latitude}.json?access_token=${mapboxgl.accessToken}`)
-        .then(res => res.json())
-        .then(async (data) => {
-            const address = data.features.reduce((prevFeature, feature) => feature.place_type[0] === 'address' ? feature : null || prevFeature, null)
-            geocoder.query(address.place_name)
-            suggestions.classList.add('hide')            
-        })
+            .then(res => res.json())
+            .then(async (data) => {
+                const address = data.features.reduce((prevFeature, feature) => feature.place_type[0] === 'address' ? feature : null || prevFeature, null)
+                geocoder.query(address.place_name)
+                suggestions.classList.add('hide')
+            })
         spinEnabled = false
-        
+
         //call stuff to add pinned locations
         exploringLoc = [pos.coords.longitude, pos.coords.latitude]
         reverseGeoSearch(currentLoc)
@@ -335,18 +335,18 @@ const startMapApp = () => {
 
 const getVisited = async () => {
     await fetch('get-all-visit')
-    .then(res => res.json())
-    .then(data => {
-        const visitedBusinesses = data.businesses
-        //business ID, marker OBJ
-        for (const business of visitedBusinesses) {
-            visitedSpots[business.id] = {
-                "type": business.type,
-                "marker": makeMarker(business, true),
-                "business": business
-            } 
-        }
-    })
+        .then(res => res.json())
+        .then(data => {
+            const visitedBusinesses = data.businesses
+            //business ID, marker OBJ
+            for (const business of visitedBusinesses) {
+                visitedSpots[business.id] = {
+                    "type": business.type,
+                    "marker": makeMarker(business, true),
+                    "business": business
+                }
+            }
+        })
 }
 
 
@@ -367,7 +367,7 @@ const getSaved = async () => {
                     "markers": currentMarkers,
                     "location": [area.lng, area.lat]
                 }
-            }            
+            }
         })
 }
 

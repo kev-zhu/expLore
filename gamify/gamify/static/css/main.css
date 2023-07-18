@@ -83,20 +83,27 @@ body {
 .sidebar {
     position: absolute;
     z-index: 1;
-    overflow: hidden;
+    overflow: scroll;
     background-color: white;
     border-radius: 5px;
     left: 10px;
-    top: 55px;
+    top: 60px;
     width: 0px;
-    height: calc(100% - 55px - 10px);
-    transition: width .2s ease;
+    height: calc(100% - 60px - 10px);
+    transition: top .2s ease, width .2s ease, height .2s ease;
 }
 
 .sidebar.active {
     left: 10px;
     width: 240px;
 }
+
+.sidebar.diractive {
+    top: 140px;
+    width: 300px;
+    height: calc(100% - 140px - 10px);
+}
+
 
 .sidebar::-webkit-scrollbar {
     display: none;
@@ -124,18 +131,20 @@ body {
 }
 
 .sidebar-content.active {
-    transform:translateX(250px);
+    transform:translateX(100%);
 }
 
 .sidebar-setting {
     position: absolute;
-    width: 250px;
+    /* width: 250px;  */
+    /* problem here with width scaling to current during animation -- letter weird shape initially */
+    width: 100%;
 }
 
 .sidebar-marker {
     position: absolute;
-    width: 250px;
-    transform: translateX(-250px);
+    width: 100%;
+    transform: translateX(-100%);
 }
 
 .sidebar-btn {
@@ -152,7 +161,7 @@ body {
 
 .sidebar-btn.active {
     display: none;
-    left: 250px;
+    left: 100%;
 }
 
 .sidebar-header {
@@ -183,9 +192,9 @@ body {
 
 /* do some calc here? make image more fitted */
 #marker-image {
-    max-width: 250px;
+    max-width: 100%;
     max-height: 200px;
-    width: 250px;
+    width: 100%;
     height: 200px;
 } 
 
@@ -221,4 +230,13 @@ body {
 
 .staff-sidebar::-webkit-scrollbar {
     display: none
+}
+
+.mapboxgl-ctrl-geocoder--icon.mapboxgl-ctrl-geocoder--icon-search {
+    display: none
+}
+
+.mapboxgl-ctrl-geocoder.mapboxgl-ctrl{
+    width: 270px;
+    border-radius: 5px;
 }

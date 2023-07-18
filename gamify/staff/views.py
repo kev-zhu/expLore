@@ -9,14 +9,24 @@ import json
 
 @staff_member_required(login_url='/')
 def staff_panel(request):
-    return render(request, 'staff/staff_panel.html')
+    businessRequests = AddedBusiness.objects.all()
+    reportRequests = ReportedBusiness.objects.all()
+
+    requestCount = businessRequests.count() + reportRequests.count()
+    context = {
+        "count": requestCount
+    }
+
+    return render(request, 'staff/staff_panel.html', context)
 
 @staff_member_required
 def request_log(request):
     businessRequests = AddedBusiness.objects.all()
     reportRequests = ReportedBusiness.objects.all()
 
+    requestCount = businessRequests.count() + reportRequests.count()
     context = {
+        "count": requestCount,
         "requests": businessRequests,
         "reports": reportRequests
     }

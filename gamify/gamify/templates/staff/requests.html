@@ -5,6 +5,10 @@
 
 {% block staffpagecontent %}
 
+{% if not requests or reports %}
+There are currently no report or request submissions.
+{% endif %}
+
 {% if requests %}
 <span class="fs-5"> Business Requests</span>
 
