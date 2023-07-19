@@ -96,6 +96,10 @@ def send_request(request):
 
         sourcedBy = User.objects.get(pk=data['userId']).username
 
+        #if business already exists -- by yelpID
+        if Business.objects.filter(yelpID=businessID).count() != 0:
+            return JsonResponse({'error': 'Business already exists.'})
+
         #prevent duplicate requests
         if AddedBusiness.objects.filter(yelpID=businessID).count() == 0:
             businessRequest = Business.objects.create(
@@ -113,6 +117,7 @@ def send_request(request):
                 name = business['name'],
                 rating = business['rating'],
                 reviewCount = business['review_count'],
+                yelpID = businessID,
                 yelpLink = business['url'])
 
             AddedBusiness.objects.create(

@@ -71,6 +71,7 @@ def get_yelp_top_10(lat, lng, type, area, zip):
                 name = business['name'],
                 rating = business['rating'],
                 reviewCount = business['review_count'],
+                yelpID = business['id'],
                 yelpLink = business['url'])
 
 

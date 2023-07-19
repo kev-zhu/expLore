@@ -20,6 +20,7 @@ class Business(models.Model):
     name = models.CharField()
     rating = models.FloatField()
     reviewCount = models.IntegerField()
+    yelpID = models.CharField(default=False, null=False, blank=False)
     yelpLink = models.CharField()
 
     def __str__(self):

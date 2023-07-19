@@ -6,6 +6,22 @@
     margin-top: 15px;
 }
 
+.close-direction {
+    position: absolute;
+    display: none;
+    z-index: 3;
+    margin-top: 10px;
+    left: 312px;
+    outline: none;
+    border-radius: 3px;
+    background-color: white;
+}
+
+.close-direction:hover {
+    outline: none;
+    background-color: white;
+}
+
 #hide-btn, .collapse-horizontal {
     float: right;
     background-color: white;
@@ -239,4 +255,8 @@ body {
 .mapboxgl-ctrl-geocoder.mapboxgl-ctrl{
     width: 270px;
     border-radius: 5px;
+}
+
+.directions-control {
+    display: none
 }

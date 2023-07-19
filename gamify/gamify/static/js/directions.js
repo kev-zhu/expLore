@@ -1,5 +1,6 @@
 const sidebarDir = document.querySelector('.sidebar-direction')
 const directionButton = document.querySelector('#marker-direction')
+const xDirection = document.querySelector('.close-direction')
 
 const direction = new MapboxDirections({
     accessToken: mapboxgl.accessToken,
@@ -8,6 +9,9 @@ const direction = new MapboxDirections({
         instructions: false
     }
 })
+map.addControl(direction, 'top-left')
+
+const directionControl = document.querySelector('.directions-control')
 
 let directionEnabled = false
 
@@ -25,14 +29,19 @@ closeDirection = () => {
     sideBar.style.height = 'calc(100% - 60px - 10px)'
 
     try {
-        map.removeControl(direction)
         map.addControl(geocoder, 'top-left')
         directionEnabled = false
     } catch {
         console.log('Direction control has already been removed.')
     }
     
+    xDirection.style.display = 'none'
+    directionControl.style.display = 'none'
 }
+
+xDirection.addEventListener('click', () => {
+    closeDirection()
+})
 
 directionButton.addEventListener('click', () => {
     closeSearch()
@@ -40,7 +49,7 @@ directionButton.addEventListener('click', () => {
 
     if (!directionEnabled) {
         directionEnabled = true
-        map.addControl(direction, 'top-left')
+        directionControl.style.display = 'block'
     }
 
     console.log(sideViewBusiness.address)
@@ -49,9 +58,7 @@ directionButton.addEventListener('click', () => {
     //revert this back when direction is closed
     sideBar.style.top = '140px'
     sideBar.style.height = 'calc(100% - 140px - 10px)'
+    xDirection.style.display = 'block'
 })
 
-
-
-//close direction button
 //fix problem wiht reopening directions -- destination cannot be set for some reason
