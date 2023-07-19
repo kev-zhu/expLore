@@ -12,12 +12,14 @@ const direction = new MapboxDirections({
 map.addControl(direction, 'top-left')
 
 const directionControl = document.querySelector('.directions-control')
+const geocoderControl = document.querySelector('.mapboxgl-ctrl-geocoder ')
 
 let directionEnabled = false
 
 closeSearch = () => {
     try {
-        map.removeControl(geocoder)
+        // map.removeControl(geocoder)
+        geocoderControl.style.display = 'none'
     } catch {
         console.log('Search control has already been removed.')
     }
@@ -29,7 +31,8 @@ closeDirection = () => {
     sideBar.style.height = 'calc(100% - 60px - 10px)'
 
     try {
-        map.addControl(geocoder, 'top-left')
+        // map.addControl(geocoder, 'top-left')
+        geocoderControl.style.display = 'block'
         directionEnabled = false
     } catch {
         console.log('Direction control has already been removed.')
@@ -60,5 +63,3 @@ directionButton.addEventListener('click', () => {
     sideBar.style.height = 'calc(100% - 140px - 10px)'
     xDirection.style.display = 'block'
 })
-
-//fix problem wiht reopening directions -- destination cannot be set for some reason
