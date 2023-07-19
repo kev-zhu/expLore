@@ -41,12 +41,6 @@ def request_spot(request):
 
 
     if (request.method == 'POST'):
-        print(request.POST)
-        if 'cancel' in request.POST:
-            return redirect('overview')
-        print('uploading data/creating new businesses to add to map')
-        print(request.POST)
-
         return redirect('overview')
 
 
@@ -57,8 +51,10 @@ def yelpFill(request, lng, lat):
     }
 
     r = requests.get(url, headers=headers)
-    queryBusiness = r.json()['businesses'][0]
-
+    try:
+        queryBusiness = r.json()['businesses'][0]
+    except:
+        return JsonResponse({'error': 'Business cannot be found on YELP Fusion API'})
     return JsonResponse({'businessData': queryBusiness})
 
 

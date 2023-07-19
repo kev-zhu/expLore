@@ -18,7 +18,6 @@ let directionEnabled = false
 
 closeSearch = () => {
     try {
-        // map.removeControl(geocoder)
         geocoderControl.style.display = 'none'
     } catch {
         console.log('Search control has already been removed.')
@@ -31,7 +30,6 @@ closeDirection = () => {
     sideBar.style.height = 'calc(100% - 60px - 10px)'
 
     try {
-        // map.addControl(geocoder, 'top-left')
         geocoderControl.style.display = 'block'
         directionEnabled = false
     } catch {
@@ -46,7 +44,7 @@ xDirection.addEventListener('click', () => {
     closeDirection()
 })
 
-directionButton.addEventListener('click', () => {
+const directionSearch = (destination) => {
     closeSearch()
     sideClose()
 
@@ -55,11 +53,14 @@ directionButton.addEventListener('click', () => {
         directionControl.style.display = 'block'
     }
 
-    console.log(sideViewBusiness.address)
-    direction.setDestination(sideViewBusiness.address)
+    direction.setDestination(destination)
 
     //revert this back when direction is closed
     sideBar.style.top = '140px'
     sideBar.style.height = 'calc(100% - 140px - 10px)'
     xDirection.style.display = 'block'
+}
+
+directionButton.addEventListener('click', () => {
+    directionSearch(sideViewBusiness.address)
 })

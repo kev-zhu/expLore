@@ -1,5 +1,6 @@
 const fetchButton = document.querySelector('.fetch-data')
 const manualButton = document.querySelector('.manual-entry')
+const unfoundYelp = document.querySelector('.unfound-yelp')
 
 const yelpConfirm = document.querySelector('.yelp-confirm')
 const yelpYes = document.querySelector('.yelp-yes')
@@ -30,10 +31,14 @@ fetchButton.addEventListener('click', () => {
     fetch(`/request/yelp-fill/${lng}/${lat}`)
         .then(res => res.json())
         .then(data => {
-            business = data.businessData
-            document.querySelector('.yelp-location').innerHTML = business.name
-            fillOption.hidden = true
-            yelpConfirm.hidden = false
+            if (data.error) {
+                unfoundYelp.hidden = false
+            } else {
+                business = data.businessData
+                document.querySelector('.yelp-location').innerHTML = business.name
+                fillOption.hidden = true
+                yelpConfirm.hidden = false
+            }
         })
 })
 
@@ -87,6 +92,8 @@ submitRequest.addEventListener('click', () => {
 
             if (place != null) {
                 sendSubmitRequest(place.place_name)
+            } else {
+                window.location.href = window.location.origin
             }
         })
 })

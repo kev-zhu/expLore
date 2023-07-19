@@ -4,7 +4,7 @@ mapboxgl.accessToken = 'pk.eyJ1Ijoia2V2aW56aHUzNSIsImEiOiJjbGlqZDlucXYwNjZuM3Fxd
 const unvisitedMarkerStr = 'linear-gradient(rgba(255,255,255,.7), rgba(255,255,255,.7)), '
 const markerStartDiameter = 40
 let currMarkerDiameter = markerStartDiameter
-let exploringZip, exploringLoc, hoveringMarker, selectedMarker
+let exploringZip, exploringLoc, hoveringMarker, selectedMarker, searchMarker
 let spinEnabled = true
 let savedAreas = {}
 let savedSpots = {}
@@ -72,7 +72,6 @@ searchEvents.forEach(event => {
     })
 })
 
-let searchMarker
 geocoder.on('result', (res) => {
     //enable spin only important for first instance if no geolocation found -- else this does nothing really
     spinEnabled = false
@@ -91,17 +90,6 @@ geocoder.on('result', (res) => {
     })
         .setLngLat(exploringLoc)
         .addTo(map)
-
-    let popUp = new mapboxgl.Popup({
-        anchor: 'left',
-    }).setHTML(`<a href="/request/request-spot?lng=${exploringLoc[0]}&lat=${exploringLoc[1]}">Register this Spot as a Business?</a>`)
-
-    searchMarker.setPopup(popUp)
-
-    searchMarker.getElement().addEventListener('click', () => {
-        console.log('popup menu option to add to map -- redirect to a page?')
-        searchMarker.togglePopup()
-    })
 })
 
 //use lng,lat to retrieve data from server of that area
@@ -126,8 +114,7 @@ const makeMarkerArea = async (ln, lt, rName, zip) => {
                 }
                 currentMarkers[business.type].push(marker)
             })
-        }
-        )
+        })
     return currentMarkers
 }
 

@@ -11,111 +11,114 @@
 
 {% block content %}
 <div class="container w-50">
-        <div class="card mt-5 mb-5 card-form">
-            <!-- <img class="card-img-top" src="" alt="Card img alt"> -->
-            <div class="card-body map-container">
-                <div style="width: 100%; height: 300px;">
-                    <div id="map" style="width: 100%; height: 300px;"></div>
-                    <!-- a -->
-                </div>
+    <div class="card mt-5 mb-5 card-form">
+        <div class="card-body map-container">
+            <div style="width: 100%; height: 300px;">
+                <div id="map" style="width: 100%; height: 300px;"></div>
             </div>
-
-            <div class="card-body fill-option">
-                <div class="btn btn-primary fetch-data">Fetch Data From Yelp Fusion</div>
-                <div class="btn btn-primary manual-entry">Manual Entry</div>
-            </div>
-
-            <div class="card-body yelp-confirm" hidden>
-                <div>Is the marked location you are requesting to add: <span class="yelp-location"></span>?</div>
-                <div class="yelp-yes btn btn-primary">Yes</div>
-                <div class="yelp-no btn btn-primary">No</div>
-            </div>
-
-            <div class="form-view" hidden>
-                <ul class="form-group list-group list-group-flush">
-                    <li class="list-group-item">
-                        Please confirm the information before sending the request.
-                    </li>
-                    <li class="list-group-item">
-                        <div class="form-group row">
-                            <label for="name" class="col-sm-2 col-form-label" style="text-align:center">Name:</label>
-                            <div class="col-sm-10">
-                                <input name="name" type="text" class="form-control form-name" id="name">
-                            </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="form-group row">
-                            <label for="category" class="col-sm-2 col-form-label" style="text-align:center">Category:</label>
-                            <div class="col-sm-10">
-                                <select name="category" class="form-control form-category" id="category">
-                                    <option hidden value=""> ----------- </option>
-                                    <option>Activity</option>
-                                    <option>Food</option>
-                                    <option>Bar</option>
-                                </select>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="form-group row">
-                            <label for="address" class="col-sm-2 col-form-label" style="text-align:center">Address:</label>
-                            <div class="col-sm-10">
-                                <input name="address" type="text" class="form-control form-address" id="address">
-                            </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="form-group row">
-                            <label for="city" class="col-sm-2 col-form-label" style="text-align:center">City:</label>
-                            <div class="col-sm-10">
-                                <input name="city" type="text" class="form-control form-city" id="city">
-                            </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="form-group row">
-                            <label for="state" class="col-sm-2 col-form-label" style="text-align:center">State:</label>
-                            <div class="col-sm-10">
-                                <input name="state" type="text" class="form-control form-state" id="state">
-                            </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="form-group row">
-                            <label for="country" class="col-sm-2 col-form-label" style="text-align:center">Country:</label>
-                            <div class="col-sm-10">
-                                <input name="country" type="text" class="form-control form-country" id="country">
-                            </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="form-group row">
-                            <label for="zip" class="col-sm-2 col-form-label" style="text-align:center">Zip:</label>
-                            <div class="col-sm-10">
-                                <input name="zip" type="text" class="form-control form-zip" id="zip">
-                            </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="form-group row">
-                            <label for="phone" class="col-sm-2 col-form-label" style="text-align:center">Phone Number:</label>
-                            <div class="col-sm-10">
-                                <input name="phone" type="text" class="form-control form-phone" id="phone">
-                            </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item">
-                            <div class="card-body form-buttons">
-                                <input class="btn btn-primary submit-request" type='submit' name="send" value="Send Request" disabled>
-                                <input class="btn btn-primary cancel-request" type='submit' name="cancel" value="Cancel Request">
-                            </div>
-                    </li>
-                </ul>
-            </div>
-
         </div>
-        {{ request.user.id | json_script:"user_id"}}
+
+        <div class="card-body fill-option">
+            <div class="unfound-yelp" hidden>This Business cannot be found on YELP's Fusion API. Please manually input the information.</div>
+            <div class="btn btn-primary fetch-data">Fetch Data From Yelp Fusion</div>
+            <div class="btn btn-primary manual-entry">Manual Entry</div>
+        </div>
+
+        <div class="card-body yelp-confirm" hidden>
+            <div>Is the marked location you are requesting to add: <span class="yelp-location"></span>?</div>
+            <div class="yelp-yes btn btn-primary">Yes</div>
+            <div class="yelp-no btn btn-primary">No</div>
+        </div>
+
+        <div class="form-view" hidden>
+            <ul class="form-group list-group list-group-flush">
+                <li class="list-group-item">
+                    Please confirm the information before sending the request.
+                </li>
+                <li class="list-group-item">
+                    <div class="form-group row">
+                        <label for="name" class="col-sm-2 col-form-label" style="text-align:center">Name:</label>
+                        <div class="col-sm-10">
+                            <input name="name" type="text" class="form-control form-name" id="name">
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="form-group row">
+                        <label for="category" class="col-sm-2 col-form-label"
+                            style="text-align:center">Category:</label>
+                        <div class="col-sm-10">
+                            <select name="category" class="form-control form-category" id="category">
+                                <option hidden value=""> ----------- </option>
+                                <option>Activity</option>
+                                <option>Food</option>
+                                <option>Bar</option>
+                            </select>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="form-group row">
+                        <label for="address" class="col-sm-2 col-form-label" style="text-align:center">Address:</label>
+                        <div class="col-sm-10">
+                            <input name="address" type="text" class="form-control form-address" id="address">
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="form-group row">
+                        <label for="city" class="col-sm-2 col-form-label" style="text-align:center">City:</label>
+                        <div class="col-sm-10">
+                            <input name="city" type="text" class="form-control form-city" id="city">
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="form-group row">
+                        <label for="state" class="col-sm-2 col-form-label" style="text-align:center">State:</label>
+                        <div class="col-sm-10">
+                            <input name="state" type="text" class="form-control form-state" id="state">
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="form-group row">
+                        <label for="country" class="col-sm-2 col-form-label" style="text-align:center">Country:</label>
+                        <div class="col-sm-10">
+                            <input name="country" type="text" class="form-control form-country" id="country">
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="form-group row">
+                        <label for="zip" class="col-sm-2 col-form-label" style="text-align:center">Zip:</label>
+                        <div class="col-sm-10">
+                            <input name="zip" type="text" class="form-control form-zip" id="zip">
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="form-group row">
+                        <label for="phone" class="col-sm-2 col-form-label" style="text-align:center">Phone
+                            Number:</label>
+                        <div class="col-sm-10">
+                            <input name="phone" type="text" class="form-control form-phone" id="phone">
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="card-body form-buttons">
+                        <input class="btn btn-primary submit-request" type='submit' name="send" value="Send Request"
+                            disabled>
+                        <input class="btn btn-primary cancel-request" type='submit' name="cancel"
+                            value="Cancel Request">
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+    {{ request.user.id | json_script:"user_id"}}
 
 </div>
 
