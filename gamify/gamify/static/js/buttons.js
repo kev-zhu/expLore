@@ -22,6 +22,7 @@ let displayName = null
 const toggleModal = () => {
     if (favorited) {
         favLoc.removeAttribute('data-bs-toggle')
+        modalDisplay.value = null
     } else {
         favLoc.setAttribute('data-bs-toggle', 'modal')
     }
@@ -180,20 +181,22 @@ const toggleFilterButtons = (type, active) => {
             })
             
             Object.keys(savedAreas).forEach(area => {
-                savedAreas[area]['markers'][type].forEach(marker => {
-                    markerKey = Object.keys(marker)[0]
-                    markerValue = Object.values(marker)[0]
-                    if (!visitedSpots.hasOwnProperty(markerKey)) {
-                        markerValue.addTo(map)
-                    }
-                })
+                if (Object.hasOwn(savedAreas[area]['markers'], type)) {
+                    savedAreas[area]['markers'][type].forEach(marker => {
+                        markerKey = Object.keys(marker)[0]
+                        markerValue = Object.values(marker)[0]
+                        if (!visitedSpots.hasOwnProperty(markerKey) && !savedSpots.hasOwnProperty(markerKey)) {
+                            markerValue.addTo(map)
+                        }
+                    })
+                }
             })
 
             if (Object.keys(exploringMarkers).length !== 0) {
                 exploringMarkers[type].forEach(marker => {
                     markerKey = Object.keys(marker)[0]
                     markerValue = Object.values(marker)[0]
-                    if (!visitedSpots.hasOwnProperty(markerKey)) {
+                    if (!visitedSpots.hasOwnProperty(markerKey) && !savedSpots.hasOwnProperty(markerKey)) {
                         markerValue.addTo(map)
                     }
                 })
@@ -216,19 +219,21 @@ const toggleFilterButtons = (type, active) => {
             })
 
             Object.keys(savedAreas).forEach(area => {
-                savedAreas[area]['markers'][type].forEach(marker => {
-                    markerKey = Object.keys(marker)[0]
-                    markerValue = Object.values(marker)[0]
-                    if (!visitedSpots.hasOwnProperty(markerKey)) {
-                        markerValue.remove(map)
-                    }
-                })
+                if (Object.hasOwn(savedAreas[area]['markers'], type)) {
+                    savedAreas[area]['markers'][type].forEach(marker => {
+                        markerKey = Object.keys(marker)[0]
+                        markerValue = Object.values(marker)[0]
+                        if (!visitedSpots.hasOwnProperty(markerKey) && !savedSpots.hasOwnProperty(markerKey)) {
+                            markerValue.remove(map)
+                        }
+                    })
+                }
             })
             if (Object.keys(exploringMarkers).length !== 0) {
                 exploringMarkers[type].forEach(marker => {
                     markerKey = Object.keys(marker)[0]
                     markerValue = Object.values(marker)[0]
-                    if (!visitedSpots.hasOwnProperty(markerKey)) {
+                    if (!visitedSpots.hasOwnProperty(markerKey) && !savedSpots.hasOwnProperty(markerKey)) {
                         markerValue.remove(map)
                     }
                 })

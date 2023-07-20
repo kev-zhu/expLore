@@ -122,9 +122,9 @@ def save_spot(request):
 
 
 @login_required
-def get_savedSpot(request, address):
+def get_savedSpot(request, id):
     try:
-        savedSpot = Spot.objects.get(user=request.user, address=address)
+        savedSpot = Spot.objects.get(user=request.user, pk=id)
         return JsonResponse({'saved': True})
     except:
         return JsonResponse({'saved': False})

@@ -63,7 +63,7 @@ const addMarkerToSide = async (business) => {
     sideViewBusiness = business
     //selectedMarker -- marker will either be at exploring, saved area or saved spot
 
-    await fetch(`get-savedSpot/${business.address}`)
+    await fetch(`get-savedSpot/${business.id}`)
     .then(res => res.json())
     .then(data => {
         spotSaved = data.saved

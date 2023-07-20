@@ -53,11 +53,61 @@ window.addEventListener('blur', () => {
     }
 })
 
+//got from mapboxgl example
+const coordinatesGeocoder = function (query) {
+    // Match anything which looks like
+    // decimal degrees coordinate pair.
+    const matches = query.match(/^[ ]*(?:Lat: )?(-?\d+\.?\d*)[, ]+(?:Lng: )?(-?\d+\.?\d*)[ ]*$/i);
+    if (!matches) {
+    return null;
+    }
+     
+    function coordinateFeature(lng, lat) {
+    return {
+    center: [lng, lat],
+    geometry: {
+    type: 'Point',
+    coordinates: [lng, lat]
+    },
+    place_name: 'Lat: ' + lat + ' Lng: ' + lng,
+    place_type: ['coordinate'],
+    properties: {},
+    type: 'Feature'
+    };
+    }
+     
+    const coord1 = Number(matches[1]);
+    const coord2 = Number(matches[2]);
+    const geocodes = [];
+     
+    if (coord1 < -90 || coord1 > 90) {
+    // must be lng, lat
+    geocodes.push(coordinateFeature(coord1, coord2));
+    }
+     
+    if (coord2 < -90 || coord2 > 90) {
+    // must be lat, lng
+    geocodes.push(coordinateFeature(coord2, coord1));
+    }
+     
+    if (geocodes.length === 0) {
+    // else could be either lng, lat or lat, lng
+    geocodes.push(coordinateFeature(coord1, coord2));
+    geocodes.push(coordinateFeature(coord2, coord1));
+    }
+     
+    return geocodes;
+    };
+
 //search for place
 const geocoder = new MapboxGeocoder({
     accessToken: mapboxgl.accessToken,
     mapboxgl: mapboxgl,
-    marker: false
+    marker: {
+        color: 'black'
+    },
+    localGeocoder: coordinatesGeocoder,
+    reverseGeocode: true,
 })
 
 map.addControl(geocoder, 'top-left')
@@ -83,13 +133,6 @@ geocoder.on('result', (res) => {
     if (searchMarker != null) {
         searchMarker.remove()
     }
-
-    //search marker
-    searchMarker = new mapboxgl.Marker({
-        color: 'black'
-    })
-        .setLngLat(exploringLoc)
-        .addTo(map)
 })
 
 //use lng,lat to retrieve data from server of that area
@@ -241,11 +284,15 @@ const reverseGeoSearch = async ([lng, lat]) => {
     await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${mapboxgl.accessToken}`)
         .then(res => res.json())
         .then(async (data) => {
-            const place = data.features.reduce((prevFeature, feature) => feature.place_type[0] === 'place' ? feature : null || prevFeature, null)
+            const place = data.features.reduce((prevFeature, feature) => feature.place_type.includes('place') ? feature : null || prevFeature, null)
 
             if (place != null) {
                 const area = place.place_name
-                exploringZip = data.features.reduce((prevFeature, feature) => feature.place_type[0] === 'postcode' ? feature : null || prevFeature, null).text
+                try {
+                    exploringZip = data.features.reduce((prevFeature, feature) => feature.place_type[0] === 'postcode' ? feature : null || prevFeature, null).text
+                } catch {
+                    console.log('Searched location does not have a registered features.zip in mapbox')
+                }
 
                 setViewingLoc(area)
 
