@@ -58,7 +58,7 @@ div#map {
     border: solid 1px lightgrey;
     background: white;
     border-radius: 5%;
-    height: 400px;
+    height: 150px;
     width: 300px;
 }
 
@@ -202,8 +202,8 @@ body {
     padding: 5px;   
 }
 
-.savedArea:hover, .savedSpot:hover, .exploredSpot:hover {
-    background-color: rgba(225,225,225,0.5);
+.savedArea:hover, .savedSpot:hover, .exploredSpot:hover, .clickable:hover {
+    background-color: rgba(225,225,225,0.6);
 }
 
 /* do some calc here? make image more fitted */
@@ -259,4 +259,9 @@ body {
 
 .directions-control {
     display: none
+}
+
+.clickable {
+    cursor: pointer;
+    background-color: white;
 }

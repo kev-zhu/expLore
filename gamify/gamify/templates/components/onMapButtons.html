@@ -44,7 +44,7 @@
         <div class="settings" id="user-settings" hidden>
             
             {% if request.user.is_staff %}
-            <a href="{% url 'staff-panel' %}" class="btn form-control">
+            <a href="{% url 'staff-panel' %}" class="btn form-control mb-2">
                 Admin Panel
             </a>
             {% endif %}
