@@ -12,7 +12,6 @@
 
                     <form action="{% url 'login' %}" method="post">
                         {% csrf_token %}
-                        {% include 'partials/_messages.html' %}
                         
                         <div class="form-group">
                             <input class="form-control form-control-sm" type="text" placeholder="Username" name="username" autofocus>
