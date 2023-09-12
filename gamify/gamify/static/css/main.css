@@ -14,13 +14,21 @@
 
 .on-top-of-map {
     display: flex;
+    flex-direction: row;
     position: absolute;
     z-index: 3;
     right: 0px;
     margin-top: 10px;
-    /* justify-content: center; */
-    align-items: center;
-    ;
+    align-items: top;
+}
+
+#location {
+    max-width: 270px;
+}
+
+.filter-menu {
+    display: flex;
+    flex-direction: row-reverse;
 }
 
 .close-direction {
@@ -48,6 +56,11 @@
     border-radius: 10px;
 }
 
+
+#hide-btn, #collapseButtons {
+    margin-top: 0px;
+}
+
 .user-setting>button.round {
     margin-right: 20px;
     height: 40px;
@@ -57,6 +70,7 @@
     /*color selector -- if background too dark then switch text color*/
     background-color: green;
     color: white;
+    top: 0px;
 }
 
 .user-setting>button.round:focus {
@@ -71,17 +85,27 @@ div#map {
     position: absolute;
     overflow: scroll;
     right: 0px;
-    margin: 20px;
+    margin: 10px 20px;
     padding: 10px;
     border: solid 1px lightgrey;
     background: white;
-    border-radius: 5%;
-    height: 150px;
-    width: 300px;
+    border-radius: 10px;
+    height: auto;
+    width: 280px;
 }
 
-#user-settings>.btn {
-    border: solid 1px lightgrey
+.settings-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+a.btn {
+    border: solid 1px lightgrey;
+}
+
+.settings-container > form {
+    margin: 0px;
 }
 
 .user-setting>.settings::-webkit-scrollbar {
@@ -301,23 +325,43 @@ body {
     background-color: white;
 }
 
+@media only screen and (max-width: 1000px) {
+    .filter-menu {
+        background-color: white;
+        border-radius: 10px;
+        position: absolute;
+        flex-direction: column-reverse;
+        margin-right: 20px;
+        right: 0;
+        top: 50px;
+    }
+
+    .filter-menu button, .filter-menu .btn {
+        width: 270px !important;
+        outline: 1px solid rgba(225, 225, 225, 0.8);
+    }
+
+    #collapseButtons {
+        margin: 5px;
+    }
+}
 
 /* filters starts out collasped/is collasped on resize 
     opening of filter minimizes search bar + vise versa
     also rearrage btns on top of map + arrow dir to up/down -- first layer currnetly viewing, 2nd layer: the filters*/
-    @media screen and (max-width: 700px) {
-        .search-collapse {
-            display: block;
-        }
-    
-        .mapboxgl-ctrl-top-left {
-            display: none;
-        }
+@media only screen and (max-width: 700px) {
+    .search-collapse {
+        display: block;
     }
-    
-    /* resize search and direction width */
-    @media only screen and (max-width: 450px) {
-        .mapboxgl-ctrl-top-left {
-            width: calc(100% - 140px);
-        }
+
+    .mapboxgl-ctrl-top-left {
+        display: none;
     }
+}
+
+/* resize search and direction width */
+@media only screen and (max-width: 450px) {
+    .mapboxgl-ctrl-top-left {
+        width: calc(100% - 140px);
+    }
+}

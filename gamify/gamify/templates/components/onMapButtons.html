@@ -5,12 +5,7 @@
 </button>
 
 <div class="on-top-of-map">
-    <div>
-        <button type="button" class="btn" id="hide-btn" data-bs-toggle="collapse" data-bs-target="#collapseButtons"
-            aria-expanded="false" aria-controls="collapseButtons">
-            &gt;
-        </button>
-
+    <div class="filter-menu">
         <div class="collapse collapse-horizontal show" id="collapseButtons">
             <button id="barButton" class="btn selection-filter" style="width: max-content;">
                 Bar
@@ -37,8 +32,12 @@
                 <span id="viewingLocation">NOWHERE</span>
             </div>
         </div>
-
     </div>
+
+    <button type="button" class="btn" id="hide-btn" data-bs-toggle="collapse" data-bs-target="#collapseButtons"
+        aria-expanded="false" aria-controls="collapseButtons">
+        &gt;
+    </button>
 
     <div class="user-setting">
         <button class="round" id="setting-button">
@@ -46,18 +45,20 @@
         </button>
 
         <div class="settings" id="user-settings" hidden>
+            <div class="settings-container">
+                {% if request.user.is_staff %}
+                <a href="{% url 'staff-panel' %}" class="btn form-control">
+                    Admin Panel
+                </a>
+                {% endif %}
+    
+                <form action="{% url 'logout' %}" method="post">
+                    {% csrf_token %}
+                    <input class="form-control" type="submit" value="Sign Out">
+                </form>
+            </div>
             
-            {% if request.user.is_staff %}
-            <a href="{% url 'staff-panel' %}" class="btn form-control">
-                Admin Panel
-            </a>
-            {% endif %}
-
-            <form action="{% url 'logout' %}" method="post">
-                {% csrf_token %}
-                <input class="form-control" type="submit" value="Sign Out">
-            </form>
-        </div> 
+        </div>
     </div>
 </div>
 
@@ -69,7 +70,7 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="saveModalLabel">Add to favorites?</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>  
+            </div>
             <div class="modal-body">
                 <div class="form-group">
                     <input type="text" class="form-control" placeholder="#ReferredName" disabled name="reference"
@@ -77,14 +78,12 @@
                 </div>
 
                 <div class="form-group mt-2">
-                    <input type="text" class="form-control" placeholder="#DisplayName" name="display"
-                        id="displayName">
+                    <input type="text" class="form-control" placeholder="#DisplayName" name="display" id="displayName">
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-primary" data-bs-dismiss="modal"
-                    id="saveLocation">Save</button>
+                <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" id="saveLocation">Save</button>
             </div>
         </div>
     </div>

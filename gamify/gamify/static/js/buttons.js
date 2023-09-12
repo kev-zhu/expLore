@@ -253,3 +253,7 @@ const setDefaultFilters = () => {
         }
     })
 }    
+
+window.addEventListener('load', () => {
+    collapsable.click()
+})

@@ -4,11 +4,6 @@ let mapboxSearch
 let clientWidth
 let smallMode
 
-//funct that deals with min sizing collapsable btns
-
-//2 event listenrs - one on load -- get teh size of current client width
-//antoher on resize -- get the new client width and see if its < 700px -- if it is the run the stuff
-
 const collapseSearch = () => {
     if (mapboxSearch == null) {
         mapboxSearch = document.querySelector('.mapboxgl-ctrl-top-left')
@@ -31,7 +26,6 @@ const expandSearch = () => {
 collapseSearchBtn.addEventListener('click', () => {
     if (!collapsable.classList.contains('collapsed')) {
         collapsable.click()
-        console.log(mapboxSearch.style.display)
         expandSearch()
     } else {
         if (mapboxSearch.style.display === 'none' || mapboxSearch.style.display === '') {

@@ -357,7 +357,7 @@ const startMapApp = () => {
     })
 
     //event listeners to stop spin on any user interactions
-    const disableSpinEvents = ['wheel', 'mousedown']
+    const disableSpinEvents = ['wheel', 'mousedown', 'dragstart']
 
     disableSpinEvents.forEach(event => {
         map.on(event, () => {
