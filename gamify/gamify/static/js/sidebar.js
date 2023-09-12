@@ -58,8 +58,10 @@ sideBarBtn.addEventListener("click", () => {
 })
 
 const addMarkerToSide = async (business) => {
+    sideOpen()
     sideContent.classList.add('active')
     sideViewBusiness = business
+    //selectedMarker -- marker will either be at exploring, saved area or saved spot
 
     await fetch(`get-savedSpot/${business.id}`)
     .then(res => res.json())
@@ -93,13 +95,6 @@ const addMarkerToSide = async (business) => {
     markerSide.querySelector('#marker-rating').innerHTML = `${business.rating} Stars`
     markerSide.querySelector('#marker-review').innerHTML = `${business.reviewCount} Reviews`
     markerSide.querySelector('#marker-yelp').href = business.yelpLink
-}
-
-const loadSide = async (business) => {
-    await addMarkerToSide(business)
-        .then(() => {
-            sideOpen()
-        })
 }
 
 
@@ -165,8 +160,8 @@ const loadSavedSide = (areas, spots) => {
             }
         }
 
-        sidebarSpot.addEventListener('click', async () => {
-            await loadSide(spot.business)
+        sidebarSpot.addEventListener('click', () => {
+            addMarkerToSide(spot.business)
             selectedMarker = savedSpots[spot.business.id]['marker']
             
             geocoder.setFlyTo(false)
@@ -195,8 +190,8 @@ const loadSavedSide = (areas, spots) => {
         vSpot.innerHTML = visitedBusiness.name
         sideExploredSpots.append(vSpot)
 
-        vSpot.addEventListener('click', async () => {
-            await loadSide(visitedBusiness)
+        vSpot.addEventListener('click', () => {
+            addMarkerToSide(visitedBusiness)
             selectedMarker = visitedSpots[visitedBusiness.id]['marker']
 
             geocoder.setFlyTo(false)

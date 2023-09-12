@@ -228,8 +228,8 @@ const manageMarkerEvents = (marker, business) => {
         }
     })
 
-    markerElement.addEventListener('click', async() => {
-        await loadSide(business)
+    markerElement.addEventListener('click', () => {
+        addMarkerToSide(business)
         selectedMarker = marker
     })
 }
