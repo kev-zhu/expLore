@@ -1,9 +1,26 @@
+.search-collapse {
+    position: absolute;
+    z-index: 100;
+    display: none;
+    border: none;
+    outline: none;
+
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    top: 10px;
+    left: 10px;
+}
+
 .on-top-of-map {
     display: flex;
     position: absolute;
     z-index: 3;
     right: 0px;
-    margin-top: 15px;
+    margin-top: 10px;
+    /* justify-content: center; */
+    align-items: center;
+    ;
 }
 
 .close-direction {
@@ -22,7 +39,8 @@
     background-color: white;
 }
 
-#hide-btn, .collapse-horizontal {
+#hide-btn,
+.collapse-horizontal {
     float: right;
     background-color: white;
     margin: auto;
@@ -30,7 +48,7 @@
     border-radius: 10px;
 }
 
-.user-setting > button.round {
+.user-setting>button.round {
     margin-right: 20px;
     height: 40px;
     width: 40px;
@@ -41,15 +59,15 @@
     color: white;
 }
 
-.user-setting > button.round:focus {
+.user-setting>button.round:focus {
     outline: none;
 }
 
-div#map { 
+div#map {
     outline: none;
 }
 
-.user-setting > .settings {
+.user-setting>.settings {
     position: absolute;
     overflow: scroll;
     right: 0px;
@@ -62,11 +80,11 @@ div#map {
     width: 300px;
 }
 
-#user-settings > .btn {
+#user-settings>.btn {
     border: solid 1px lightgrey
 }
 
-.user-setting > .settings::-webkit-scrollbar {
+.user-setting>.settings::-webkit-scrollbar {
     display: none;
 }
 
@@ -92,7 +110,8 @@ body {
     max-width: 200px;
 }
 
-#star, #spotStar{
+#star,
+#spotStar {
     color: orange;
 }
 
@@ -125,29 +144,36 @@ body {
     display: none;
 }
 
-.xSidebar { 
+.xSidebar {
     position: absolute;
     top: 0;
     right: 0;
     height: 25px;
     width: 25px;
-    background-color: inherit;
+    margin: 5px;
+    background-color: hsla(0, 0%, 100%, 0.3);
     border-radius: 50%;
     z-index: 2;
     border: none;
 }
 
+.xSidebar>span {
+    position: relative;
+    right: 4px;
+    top: 1px;
+}
+
 .xSidebar:hover {
-    filter:brightness(80%)
+    filter: brightness(80%)
 }
 
 .sidebar-content {
-    transform:translateX(0);
+    transform: translateX(0);
     transition: transform 0.1s ease;
 }
 
 .sidebar-content.active {
-    transform:translateX(100%);
+    transform: translateX(100%);
 }
 
 .sidebar-setting {
@@ -161,6 +187,10 @@ body {
     position: absolute;
     width: 100%;
     transform: translateX(-100%);
+}
+
+.sidebar-marker>div {
+    padding: 2px 5px;
 }
 
 .sidebar-btn {
@@ -193,17 +223,22 @@ body {
 .accordion-button:focus {
     outline: none;
     box-shadow: none;
-    
+
 }
 
-.savedArea, .savedSpot, .exploredSpot {
+.savedArea,
+.savedSpot,
+.exploredSpot {
     white-space: nowrap;
     overflow-x: clip;
-    padding: 5px;   
+    padding: 5px;
 }
 
-.savedArea:hover, .savedSpot:hover, .exploredSpot:hover, .clickable:hover {
-    background-color: rgba(225,225,225,0.6);
+.savedArea:hover,
+.savedSpot:hover,
+.exploredSpot:hover,
+.clickable:hover {
+    background-color: rgba(225, 225, 225, 0.6);
 }
 
 /* do some calc here? make image more fitted */
@@ -212,9 +247,9 @@ body {
     max-height: 200px;
     width: 100%;
     height: 200px;
-} 
+}
 
-.sidebar-marker > div {
+.sidebar-marker>div {
     border-bottom: 1px solid lightgrey;
 }
 
@@ -252,7 +287,7 @@ body {
     display: none
 }
 
-.mapboxgl-ctrl-geocoder.mapboxgl-ctrl{
+.mapboxgl-ctrl-geocoder.mapboxgl-ctrl {
     width: 270px;
     border-radius: 5px;
 }
@@ -265,3 +300,24 @@ body {
     cursor: pointer;
     background-color: white;
 }
+
+
+/* filters starts out collasped/is collasped on resize 
+    opening of filter minimizes search bar + vise versa
+    also rearrage btns on top of map + arrow dir to up/down -- first layer currnetly viewing, 2nd layer: the filters*/
+    @media screen and (max-width: 700px) {
+        .search-collapse {
+            display: block;
+        }
+    
+        .mapboxgl-ctrl-top-left {
+            display: none;
+        }
+    }
+    
+    /* resize search and direction width */
+    @media only screen and (max-width: 450px) {
+        .mapboxgl-ctrl-top-left {
+            width: calc(100% - 140px);
+        }
+    }

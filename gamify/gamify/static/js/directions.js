@@ -32,6 +32,12 @@ closeDirection = () => {
     try {
         geocoderControl.style.display = 'block'
         directionEnabled = false
+
+        document.querySelectorAll('.mapboxgl-ctrl-geocoder').forEach(inputBlock => {
+            inputBlock.querySelector('input').value = ''
+        })
+        direction.actions.clearOrigin()
+        direction.actions.clearDestination()
     } catch {
         console.log('Direction control has already been removed.')
     }
