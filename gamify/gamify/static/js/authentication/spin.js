@@ -25,8 +25,3 @@ map.on('moveend', () => {
         spinGlobe()
     }
 })
-
-
-map.on('mousedown', () => {
-    spinning = false
-})

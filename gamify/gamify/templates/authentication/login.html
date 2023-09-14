@@ -1,39 +1,42 @@
 {% extends 'base_auth.html' %}
 
 {% block content %}
-    <div class="row">
-        <div class="col-md-4"></div>
-        <div class="col-md-4">
-            <div class="card mt-5">
-                <div class="card-body">
-                    <div class="card-title">
-                        <h5>Login to your account</h5>
+<div class="row">
+    <div class="col-md-4"></div>
+    <div class="col-md-4 card-center">
+        <div class="card">
+            <div class="card-title">
+                <h5>Login to your account</h5>
+            </div>
+            <div class="card-body mx-auto">
+                <form action="{% url 'login' %}" method="post">
+                    {% csrf_token %}
+
+                    <div class="form-group">
+                        <input class="form-control form-control-sm" type="text" placeholder="Username" name="username"
+                            autofocus>
+                    </div>
+                    <div class="form-group">
+                        <input class="form-control form-control-sm" type="password" placeholder="Password"
+                            name="password">
+                    </div>
+                    <div class="form-group">
+                        <input class="form-control form-control-sm btn btn-secondary" type="submit" value="Login">
                     </div>
 
-                    <form action="{% url 'login' %}" method="post">
-                        {% csrf_token %}
-                        
-                        <div class="form-group">
-                            <input class="form-control form-control-sm" type="text" placeholder="Username" name="username" autofocus>
-                        </div>
-                        <div class="form-group">
-                            <input class="form-control form-control-sm" type="password" placeholder="Password" name="password">
-                        </div>
-                        <div class="form-group">
-                            <input class="form-control form-control-sm btn btn-primary" type="submit" value="Login">
-                        </div>
-                    
-                    </form>
-                    
-                    <div class="container">
-                        <span class="text-lead lead">Don't have an account? <a href="{% url 'register' %}">Register Here</a></span><br>
-                        <span class="text-lead lead">Forgot your password? <a href="{% url 'reset-password' %}">Reset Password</a></span>
-                    </div>
+                </form>
+
+                <div class="container">
+                    <span class="text-lead lead">Don't have an account? <a href="{% url 'register' %}">Register
+                            Here</a></span><br>
+                    <span class="text-lead lead">Forgot your password? <a href="{% url 'reset-password' %}">Reset
+                            Password</a></span>
                 </div>
             </div>
-
         </div>
-        <div class="col-md-4"></div>
+
     </div>
+    <div class="col-md-4"></div>
+</div>
 
 {% endblock %}

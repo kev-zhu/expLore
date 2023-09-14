@@ -1,3 +1,8 @@
+main {
+    width: 100%;
+    overflow: hidden;
+}
+
 .auth-map {
     width: 100%;
     height: 100%;
@@ -5,12 +10,62 @@
 }
 
 .card{
-    background-color: hsla(0, 0%, 100%, 0.9)
+    width: 100%;
+    background-color: hsla(0, 0%, 100%, .95)
 }
 
-main {
+.card-center {
+    display: flex;
+    height: 100vh;
+    align-items: center;
+}
+
+.card {
+    border-radius: 10px;
+}
+
+.card-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;    
+    border-bottom: 1px solid lightgrey;
+    padding: 1rem 0;
+}
+
+.card-title > h5 { 
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.form-group > input {
+    border: none;
+    border-bottom: 1px solid lightgrey;
+    background-color: hsla(0, 0%, 100%, 0.2);
+    outline: none;
+}
+
+.form-group > input:focus {
+    background-color: hsla(0, 0%, 100%, 0.2);
+    color: inherit;
+    border-bottom: 1px solid lightgrey;
+    outline: none;
+    box-shadow: none;
+}
+
+.form-group > [type="submit"] {
+    margin-top: 1rem;
+    background-color: grey;
+    border-radius: 20px;
+}
+
+.card-body {
+    width: 90%;
+    padding-top: 0;
+}
+
+.card-body > * {
     width: 100%;
-    overflow: hidden;
+    padding-top: 1rem;
 }
 
 .search-collapse {
