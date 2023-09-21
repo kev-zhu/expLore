@@ -11,7 +11,8 @@ main {
 
 .card{
     width: 100%;
-    background-color: hsla(0, 0%, 100%, .95)
+    background-color: hsla(0, 0%, 100%, .95);
+    margin: 10px;
 }
 
 .card-center {
@@ -66,6 +67,18 @@ main {
 .card-body > * {
     width: 100%;
     padding-top: 1rem;
+}
+
+.fill-option, .yelp-confirm, .form-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    width: auto;
+    padding: 1rem;
+}
+
+.fill-option > * , .yelp-confirm > *, .form-buttons  > * {
+    padding-top: 10px;
 }
 
 .search-collapse {
@@ -170,7 +183,7 @@ div#map {
     gap: 0.5rem;
 }
 
-a.btn {
+.settings-container > a, .settings-container > a:hover {
     border: solid 1px lightgrey;
 }
 
@@ -202,6 +215,16 @@ body {
 
 .mapboxgl-popup {
     max-width: 200px;
+}
+
+.mapboxgl-popup-content {
+    padding: 5px;
+    border-radius: 10px;
+}
+
+.mapboxgl-popup-content > * {
+    border: none !important;
+    outline: none !important;
 }
 
 #star,

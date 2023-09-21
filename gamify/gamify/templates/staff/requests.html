@@ -5,7 +5,7 @@
 
 {% block staffpagecontent %}
 
-{% if not requests or reports %}
+{% if not requests or not reports %}
 There are currently no report or request submissions.
 {% endif %}
 
@@ -42,7 +42,7 @@ There are currently no report or request submissions.
                     </div>
                     <div>
                         <strong>Coordinates: </strong>
-                        Lat - {{ request.business.lat }}, Lng - {{ request.business.lng }} 
+                        Lat: {{ request.business.lat }}, Lng: {{ request.business.lng }} 
                     </div>
                     <div>
                         <strong>Location Image: </strong>
@@ -112,7 +112,7 @@ There are currently no report or request submissions.
                     </div>
                     <div>
                         <strong>Coordinates: </strong>
-                        Lat - {{ report.business.lat }}, Lng - {{ report.business.lng }} 
+                        Lat: {{ report.business.lat }}, Lng: {{ report.business.lng }} 
                     </div>
                     <div>
                         <strong>Location Image: </strong>
