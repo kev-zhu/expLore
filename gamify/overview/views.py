@@ -31,7 +31,6 @@ def get_poi(request):
         zip = request.GET['zip']
         types=request.GET['type'].split(' ')
 
-
         for businessType in types:
             if Business.objects.filter(area=area, zipSearch=zip, type=businessType, approved=True).count() == 0:
                 get_yelp_top_10(lat, lng, businessType, area, zip)
@@ -51,6 +50,7 @@ def get_yelp_top_10(lat, lng, type, area, zip):
         'Authorization': f'Bearer {yelp_api}'
     }
 
+    #daily limit of 500 YELP api calls -- so use of db storage to work around call limit
     r = requests.get(url, headers=headers)
     businesses = r.json()['businesses']
 
@@ -205,3 +205,7 @@ def get_all_visit(request):
     visitedBusiness = list(map(model_to_dict, allVisitBusiness))
 
     return JsonResponse({'businesses': visitedBusiness})
+
+def get_all_spots(request):
+    allSpots = Business.objects.all()
+    return JsonResponse({'all': sorted(list(set([s.area for s in allSpots])))})

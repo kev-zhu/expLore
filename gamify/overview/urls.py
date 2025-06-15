@@ -16,4 +16,5 @@ urlpatterns = [
     path('save-visit', csrf_exempt(views.save_visit), name='save-visit'),
     path('del-visit', csrf_exempt(views.del_visit), name='del-visit'),
     path('get-all-visit', csrf_exempt(views.get_all_visit), name='get-all-visit'),
+    path('get-all-city-spots', csrf_exempt(views.get_all_spots), name='get-all-spots')
 ]
