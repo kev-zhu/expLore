@@ -1,0 +1,460 @@
+main {
+    width: 100%;
+    overflow: hidden;
+}
+
+.auth-map {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+}
+
+.card{
+    width: 100%;
+    background-color: hsla(0, 0%, 100%, .95);
+    margin: 10px;
+}
+
+.card-center {
+    display: flex;
+    height: 100vh;
+    align-items: center;
+}
+
+.card {
+    border-radius: 10px;
+}
+
+.card-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;    
+    border-bottom: 1px solid lightgrey;
+    padding: 1rem 0;
+}
+
+.card-title > h5 { 
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.form-group > input {
+    border: none;
+    border-bottom: 1px solid lightgrey;
+    background-color: hsla(0, 0%, 100%, 0.2);
+    outline: none;
+}
+
+.form-group > input:focus {
+    background-color: hsla(0, 0%, 100%, 0.2);
+    color: inherit;
+    border-bottom: 1px solid lightgrey;
+    outline: none;
+    box-shadow: none;
+}
+
+.form-group > [type="submit"] {
+    margin-top: 1rem;
+    background-color: grey;
+    border-radius: 20px;
+}
+
+.card-body {
+    width: 90%;
+    padding-top: 0;
+}
+
+.card-body > * {
+    width: 100%;
+    padding-top: 1rem;
+}
+
+.fill-option, .yelp-confirm, .form-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    width: auto;
+    padding: 1rem;
+}
+
+.fill-option > * , .yelp-confirm > *, .form-buttons  > * {
+    padding-top: 10px;
+}
+
+.search-collapse {
+    position: absolute;
+    z-index: 100;
+    display: none;
+    border: none;
+    outline: none;
+
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    top: 10px;
+    left: 10px;
+}
+
+.on-top-of-map {
+    display: flex;
+    flex-direction: row;
+    position: absolute;
+    z-index: 3;
+    right: 0px;
+    margin-top: 10px;
+    align-items: top;
+}
+
+#location {
+    max-width: 270px;
+}
+
+.filter-menu {
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+.close-direction {
+    position: absolute;
+    display: none;
+    z-index: 3;
+    margin-top: 10px;
+    left: 312px;
+    outline: none;
+    border-radius: 3px;
+    background-color: white;
+}
+
+.close-direction:hover {
+    outline: none;
+    background-color: white;
+}
+
+#hide-btn,
+.collapse-horizontal {
+    float: right;
+    background-color: white;
+    margin: auto;
+    margin-right: 20px;
+    border-radius: 10px;
+}
+
+
+#hide-btn, #collapseButtons {
+    margin-top: 0px;
+}
+
+.user-setting>button.round {
+    margin-right: 20px;
+    height: 40px;
+    width: 40px;
+    border: none;
+    border-radius: 50%;
+    /*color selector -- if background too dark then switch text color*/
+    background-color: green;
+    color: white;
+    top: 0px;
+}
+
+.user-setting>button.round:focus {
+    outline: none;
+}
+
+div#map {
+    outline: none;
+}
+
+.user-setting>.settings {
+    position: absolute;
+    overflow: scroll;
+    right: 0px;
+    margin: 10px 20px;
+    padding: 10px;
+    border: solid 1px lightgrey;
+    background: white;
+    border-radius: 10px;
+    height: auto;
+    width: 280px;
+}
+
+.settings-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.settings-container > a, .settings-container > a:hover {
+    border: solid 1px lightgrey;
+}
+
+.settings-container > form {
+    margin: 0px;
+}
+
+.user-setting>.settings::-webkit-scrollbar {
+    display: none;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+#map {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+}
+
+.marker {
+    display: block;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.mapboxgl-popup {
+    max-width: 200px;
+}
+
+.mapboxgl-popup-content {
+    padding: 5px;
+    border-radius: 10px;
+}
+
+.mapboxgl-popup-content > * {
+    border: none !important;
+    outline: none !important;
+}
+
+#star,
+#spotStar {
+    color: orange;
+}
+
+.sidebar {
+    position: absolute;
+    z-index: 1;
+    overflow: scroll;
+    background-color: white;
+    border-radius: 5px;
+    left: 10px;
+    top: 60px;
+    width: 0px;
+    height: calc(100% - 60px - 10px);
+    transition: top .2s ease, width .2s ease, height .2s ease;
+}
+
+.sidebar.active {
+    left: 10px;
+    width: 270px;
+}
+
+.sidebar.diractive {
+    top: 140px;
+    width: 300px;
+    height: calc(100% - 140px - 10px);
+}
+
+
+.sidebar::-webkit-scrollbar {
+    display: none;
+}
+
+.xSidebar {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 25px;
+    width: 25px;
+    margin: 5px;
+    background-color: hsla(0, 0%, 100%, 0.3);
+    border-radius: 50%;
+    z-index: 2;
+    border: none;
+}
+
+.xSidebar>span {
+    position: relative;
+    right: 4px;
+    top: 1px;
+}
+
+.xSidebar:hover {
+    filter: brightness(80%)
+}
+
+.sidebar-content {
+    transform: translateX(0);
+    transition: transform 0.1s ease;
+}
+
+.sidebar-content.active {
+    transform: translateX(100%);
+}
+
+.sidebar-setting {
+    position: absolute;
+    /* width: 250px;  */
+    /* problem here with width scaling to current during animation -- letter weird shape initially */
+    width: 100%;
+}
+
+.sidebar-marker {
+    position: absolute;
+    width: 100%;
+    transform: translateX(-100%);
+}
+
+.sidebar-marker>div {
+    padding: 2px 5px;
+}
+
+.sidebar-btn {
+    position: absolute;
+    display: block;
+    z-index: 2;
+    top: 50vh;
+    left: 0px;
+    background-color: white;
+    border: none;
+    opacity: 0.8;
+    transition: left .2s ease;
+}
+
+.sidebar-btn.active {
+    display: none;
+    left: 100%;
+}
+
+.sidebar-header {
+    height: 30px;
+
+    font-size: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.accordion-button:focus {
+    outline: none;
+    box-shadow: none;
+
+}
+
+.savedArea,
+.savedSpot,
+.exploredSpot {
+    white-space: nowrap;
+    overflow-x: clip;
+    padding: 5px;
+}
+
+.savedArea:hover,
+.savedSpot:hover,
+.exploredSpot:hover,
+.clickable:hover {
+    background-color: rgba(225, 225, 225, 0.6);
+}
+
+/* do some calc here? make image more fitted */
+#marker-image {
+    max-width: 100%;
+    max-height: 200px;
+    width: 100%;
+    height: 200px;
+}
+
+.sidebar-marker>div {
+    border-bottom: 1px solid lightgrey;
+}
+
+.suggestions-wrapper.hide {
+    display: none;
+}
+
+.map-container {
+    padding: 0px;
+    margin: 0px;
+}
+
+.card-form {
+    overflow: clip;
+}
+
+.form-buttons {
+    float: right
+}
+
+.report {
+    color: red
+}
+
+.staff-sidebar {
+    height: 100vh;
+    overflow-y: scroll
+}
+
+.staff-sidebar::-webkit-scrollbar {
+    display: none
+}
+
+.mapboxgl-ctrl-geocoder--icon.mapboxgl-ctrl-geocoder--icon-search {
+    display: none
+}
+
+.mapboxgl-ctrl-geocoder.mapboxgl-ctrl {
+    width: 270px;
+    border-radius: 5px;
+}
+
+.directions-control {
+    display: none
+}
+
+.clickable {
+    cursor: pointer;
+    background-color: white;
+}
+
+@media only screen and (max-width: 1000px) {
+    .filter-menu {
+        background-color: white;
+        border-radius: 10px;
+        position: absolute;
+        flex-direction: column-reverse;
+        margin-right: 20px;
+        right: 0;
+        top: 50px;
+    }
+
+    .filter-menu button, .filter-menu .btn {
+        width: 270px !important;
+        outline: 1px solid rgba(225, 225, 225, 0.8);
+    }
+
+    #collapseButtons {
+        margin: 5px;
+    }
+}
+
+/* filters starts out collasped/is collasped on resize 
+    opening of filter minimizes search bar + vise versa
+    also rearrage btns on top of map + arrow dir to up/down -- first layer currnetly viewing, 2nd layer: the filters*/
+@media only screen and (max-width: 700px) {
+    .search-collapse {
+        display: block;
+    }
+
+    .mapboxgl-ctrl-top-left {
+        display: none;
+    }
+}
+
+/* resize search and direction width */
+@media only screen and (max-width: 450px) {
+    .mapboxgl-ctrl-top-left {
+        width: calc(100% - 140px);
+    }
+}
