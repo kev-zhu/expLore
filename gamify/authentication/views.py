@@ -33,6 +33,13 @@ def login(request):
         username = request.POST['username']
         password = request.POST['password']
  
+        try: 
+            if request.POST['sample']:
+                username = 'sampleuser'
+                password = 'samplepass'
+        except: 
+            return redirect('login')
+
         if username and password:
             user = auth.authenticate(username=username, password=password)
 
