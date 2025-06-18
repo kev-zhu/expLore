@@ -40,4 +40,5 @@ https://github.com/user-attachments/assets/f00ab7f4-9f40-436c-9fd4-0e3f9f300228
 ## Demo 
 
 You can register an account or try out the features with the sample account on the login page at:
+
 https://explore-omega-six.vercel.app/
